@@ -1,13 +1,13 @@
 package com.ru.preferans.entities.card;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.ru.preferans.entities.move.Move;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -22,4 +22,7 @@ public class Card {
 
     private Suit suit;
     private Rank rank;
+
+    @OneToMany
+    private List<Move> moves;
 }

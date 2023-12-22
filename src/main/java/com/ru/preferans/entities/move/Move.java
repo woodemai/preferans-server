@@ -20,12 +20,12 @@ public class Move {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @OneToMany
+    @ManyToOne
     private Player player;
 
-    @OneToMany
+    @ManyToOne
     private Card card;
 
-    @OneToMany
+    @ManyToOne
     private Round round;
 }

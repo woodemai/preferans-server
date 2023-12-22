@@ -1,11 +1,15 @@
 package com.ru.preferans.entities.player;
 
+import com.ru.preferans.entities.game.Game;
+import com.ru.preferans.entities.move.Move;
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -24,4 +28,10 @@ public class Player {
 
     @OneToOne
     private User user;
+
+    @ManyToMany
+    private List<Game> games;
+
+    @OneToMany
+    private List<Move> moves;
 }

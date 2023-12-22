@@ -1,9 +1,7 @@
 package com.ru.preferans.entities.bet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.ru.preferans.entities.round.Round;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,4 +20,7 @@ public class Bet {
 
     private BetType type;
     private int value;
+
+    @ManyToOne
+    private Round round;
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +17,6 @@ public class GameDto {
     private String name;
     private String startedTime;
     private String endedTime;
+    private List<String> playerIds;
+    private List<String> roundIds;
 }

@@ -1,15 +1,15 @@
 package com.ru.preferans.entities.game;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.ru.preferans.entities.player.Player;
+import com.ru.preferans.entities.round.Round;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -24,4 +24,10 @@ public class Game {
     private String name;
     private LocalDateTime startedTime;
     private LocalDateTime endedTime;
+
+    @ManyToMany
+    private List<Player> players;
+
+    @OneToMany
+    private List<Round> rounds;
 }
