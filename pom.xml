@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.0</version>
+		<version>3.1.2</version>
 		<relativePath/>
 	</parent>
-	<groupId>com.ru</groupId>
-	<artifactId>template</artifactId>
+	<groupId>com.ru.preferans</groupId>
+	<artifactId>preferans</artifactId>
 	<version>0.0.1</version>
-	<name>template</name>
-	<description>Template Spring Boot Postgres</description>
+	<name>Preferans</name>
+	<description>Preferans game server Spring Boot Postgres</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
@@ -49,12 +49,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-docker-compose</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
@@ -62,6 +56,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
