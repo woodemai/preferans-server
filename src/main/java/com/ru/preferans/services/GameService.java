@@ -70,7 +70,11 @@ public class GameService {
                 .roundIds(game.getRounds().stream().map(Round::getId).toList())
                 .build();
     }
-
+    public Game endGame(String gameId) {
+        Game game = getGame(gameId);
+        game.setState(GameState.ENDED);
+        return saveGame(game);
+    }
     private EntityNotFoundException gameNotFound(String gameId) {
         return new EntityNotFoundException("Game with id " + gameId + " was not found");
     }
