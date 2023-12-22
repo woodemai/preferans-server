@@ -1,13 +1,16 @@
 package com.ru.preferans.services;
 
 import com.ru.preferans.entities.game.Game;
+import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
 import com.ru.preferans.entities.player.Player;
+import com.ru.preferans.entities.round.Round;
 import com.ru.preferans.repositories.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +24,8 @@ public class GameService {
         List<Player> players = new ArrayList<>();
         players.add(player);
         var game = Game.builder()
+                .startedTime(LocalDateTime.now())
+                .endedTime(LocalDateTime.now())
                 .state(GameState.CREATED)
                 .players(players)
                 .rounds(new ArrayList<>())
@@ -54,6 +59,16 @@ public class GameService {
     private Game getGame(String gameId) {
         return repository.findById(gameId)
                 .orElseThrow(() -> gameNotFound(gameId));
+    }
+    public GameDto convertToDto(Game game) {
+        return GameDto.builder()
+                .id(game.getId())
+                .startedTime(game.getStartedTime().toString())
+                .endedTime(game.getEndedTime().toString())
+                .state(game.getState().toString())
+                .playerIds(game.getPlayers().stream().map(Player::getId).toList())
+                .roundIds(game.getRounds().stream().map(Round::getId).toList())
+                .build();
     }
 
     private EntityNotFoundException gameNotFound(String gameId) {
