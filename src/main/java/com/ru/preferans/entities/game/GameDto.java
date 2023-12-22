@@ -14,9 +14,9 @@ import java.util.List;
 public class GameDto {
 
     private String id;
-    private String name;
     private String startedTime;
     private String endedTime;
+    private String state;
     private List<String> playerIds;
     private List<String> roundIds;
 }

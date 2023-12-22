@@ -21,9 +21,9 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private String name;
     private LocalDateTime startedTime;
     private LocalDateTime endedTime;
+    private GameState state;
 
     @ManyToMany
     private List<Player> players;
