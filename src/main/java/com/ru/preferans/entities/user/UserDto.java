@@ -17,4 +17,7 @@ public class UserDto {
     private String name;
     private String role;
     private String playerId;
+
+    private String createdAt;
+    private String updatedAt;
 }

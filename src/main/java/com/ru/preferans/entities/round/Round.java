@@ -9,7 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -36,4 +39,10 @@ public class Round {
 
     @OneToMany
     private List<Bet> bets;
+
+    @CreatedDate
+    private Timestamp createdAt;
+
+    @LastModifiedDate
+    private Timestamp updatedAt;
 }

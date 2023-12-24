@@ -19,4 +19,7 @@ public class TableDto {
 
     private List<String> roundIds;
     private String gameId;
+
+    private String createdAt;
+    private String updatedAt;
 }

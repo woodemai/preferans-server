@@ -2,6 +2,7 @@ package com.ru.preferans.entities.auth;
 
 
 import com.ru.preferans.entities.user.User;
+import com.ru.preferans.entities.user.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
 
     private String accessToken;
-    private String refreshToken;
-    private User user;
+    private UserDto user;
 
 }

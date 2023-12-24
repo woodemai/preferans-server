@@ -1,15 +1,18 @@
 package com.ru.preferans.entities.game;
 
-import com.ru.preferans.entities.player.Player;
 import com.ru.preferans.entities.round.Round;
 import com.ru.preferans.entities.table.Table;
+import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -22,16 +25,20 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private LocalDateTime startedTime;
-    private LocalDateTime endedTime;
     private GameState state;
 
     @ManyToMany
-    private List<Player> players;
+    private List<User> players;
 
     @OneToMany
     private List<Round> rounds;
 
     @OneToOne
     private Table table;
+
+    @CreatedDate
+    private Timestamp createdAt;
+
+    @LastModifiedDate
+    private Timestamp updatedAt;
 }

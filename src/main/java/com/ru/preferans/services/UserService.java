@@ -27,23 +27,20 @@ public class UserService {
 
     public User setUser(RegisterRequest request) {
         Optional<User> optUser = repository.getByEmail(request.getEmail());
-        UserRole role = extractRole(request.getRole());
         if (optUser.isPresent()) {
             throw new EntityExistsException("User with email: " + request.getEmail() + " already exists");
         }
         var user = User.builder()
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
-                .role(role)
+                .name(request.getName())
+                .role(UserRole.USER)
                 .build();
         return repository.save(user);
     }
 
-    private UserRole extractRole(String role) {
-        return switch (role) {
-            case "USER" -> UserRole.USER;
-            case "ADMIN" -> UserRole.ADMIN;
-            default -> throw new EntityNotFoundException("Role " + role + " not found");
-        };
+    public User getById(String playerId) {
+        return repository.findById(playerId)
+                .orElseThrow(() -> new EntityNotFoundException("Player with id " + playerId + "not found"));
     }
 }

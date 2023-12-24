@@ -3,9 +3,9 @@ package com.ru.preferans.services;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
-import com.ru.preferans.entities.player.Player;
 import com.ru.preferans.entities.round.Round;
 import com.ru.preferans.entities.table.Table;
+import com.ru.preferans.entities.user.User;
 import com.ru.preferans.repositories.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +21,10 @@ public class GameService {
 
     private final GameRepository repository;
 
-    public Game createGame(Player player, Table table) {
-        List<Player> players = new ArrayList<>();
+    public Game createGame(User player, Table table) {
+        List<User> players = new ArrayList<>();
         players.add(player);
         var game = Game.builder()
-                .startedTime(LocalDateTime.now())
-                .endedTime(LocalDateTime.now())
                 .state(GameState.CREATED)
                 .players(players)
                 .table(table)
@@ -34,17 +32,17 @@ public class GameService {
                         .build();
         return repository.save(game);
     }
-    public Game connectPlayer(Player player, String gameId) {
+    public Game connectPlayer(User player, String gameId) {
         Game game = getGame(gameId);
-        List<Player> players = game.getPlayers();
+        List<User> players = game.getPlayers();
         players.add(player);
         game.setPlayers(players);
         return saveGame(game);
     }
 
-    public Game disconnectPlayer(Player player, String gameId) {
+    public Game disconnectPlayer(User player, String gameId) {
         Game game = getGame(gameId);
-        List<Player> players = game.getPlayers();
+        List<User> players = game.getPlayers();
         players.remove(player);
         game.setPlayers(players);
         return saveGame(game);
@@ -65,10 +63,8 @@ public class GameService {
     public GameDto convertToDto(Game game) {
         return GameDto.builder()
                 .id(game.getId())
-                .startedTime(game.getStartedTime().toString())
-                .endedTime(game.getEndedTime().toString())
                 .state(game.getState().toString())
-                .playerIds(game.getPlayers().stream().map(Player::getId).toList())
+                .playerIds(game.getPlayers().stream().map(User::getId).toList())
                 .roundIds(game.getRounds().stream().map(Round::getId).toList())
                 .build();
     }
@@ -79,5 +75,9 @@ public class GameService {
     }
     private EntityNotFoundException gameNotFound(String gameId) {
         return new EntityNotFoundException("Game with id " + gameId + " was not found");
+    }
+
+    public List<Game> getAll() {
+        return repository.findAll();
     }
 }

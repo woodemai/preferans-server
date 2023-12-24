@@ -14,10 +14,11 @@ import java.util.List;
 public class GameDto {
 
     private String id;
-    private String startedTime;
-    private String endedTime;
     private String state;
     private List<String> playerIds;
     private List<String> roundIds;
     private String tableId;
+
+    private String createdAt;
+    private String updatedAt;
 }

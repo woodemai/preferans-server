@@ -20,4 +20,7 @@ public class RoundDto {
     private String tableId;
     private List<String> moveIds;
     private List<String> betIds;
+
+    private String createdAt;
+    private String updatedAt;
 }
