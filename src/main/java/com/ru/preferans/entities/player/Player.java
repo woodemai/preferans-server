@@ -1,5 +1,6 @@
 package com.ru.preferans.entities.player;
 
+import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.move.Move;
 import com.ru.preferans.entities.user.User;
@@ -34,4 +35,7 @@ public class Player {
 
     @OneToMany
     private List<Move> moves;
+
+    @ManyToMany
+    private List<Card> cards;
 }

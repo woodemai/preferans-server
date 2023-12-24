@@ -19,4 +19,5 @@ public class GameDto {
     private String state;
     private List<String> playerIds;
     private List<String> roundIds;
+    private String tableId;
 }

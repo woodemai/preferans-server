@@ -2,6 +2,7 @@ package com.ru.preferans.entities.game;
 
 import com.ru.preferans.entities.player.Player;
 import com.ru.preferans.entities.round.Round;
+import com.ru.preferans.entities.table.Table;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,7 @@ public class Game {
 
     @OneToMany
     private List<Round> rounds;
+
+    @OneToOne
+    private Table table;
 }

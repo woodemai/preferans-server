@@ -5,6 +5,7 @@ import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
 import com.ru.preferans.entities.player.Player;
 import com.ru.preferans.entities.round.Round;
+import com.ru.preferans.entities.table.Table;
 import com.ru.preferans.repositories.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class GameService {
 
     private final GameRepository repository;
 
-    public Game createGame(Player player) {
+    public Game createGame(Player player, Table table) {
         List<Player> players = new ArrayList<>();
         players.add(player);
         var game = Game.builder()
@@ -28,6 +29,7 @@ public class GameService {
                 .endedTime(LocalDateTime.now())
                 .state(GameState.CREATED)
                 .players(players)
+                .table(table)
                 .rounds(new ArrayList<>())
                         .build();
         return repository.save(game);

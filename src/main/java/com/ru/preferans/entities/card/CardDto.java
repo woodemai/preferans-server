@@ -18,4 +18,5 @@ public class CardDto {
     private String suit;
     private String rank;
     private List<String> moveIds;
+    private List<String> players;
 }

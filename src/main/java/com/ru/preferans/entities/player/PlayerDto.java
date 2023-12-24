@@ -19,4 +19,5 @@ public class PlayerDto {
     private String userId;
     private List<String> gameIds;
     private List<String> moveIds;
+    private List<String> cards;
 }
