@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class Game {
     private String id;
     private GameState state;
 
-    @ManyToMany
+    @OneToMany
     private List<User> players;
 
     @OneToMany

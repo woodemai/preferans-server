@@ -37,7 +37,7 @@ public class User implements UserDetails {
 
     private int score;
 
-    @OneToOne
+    @ManyToOne
     private Game game;
 
     @OneToMany

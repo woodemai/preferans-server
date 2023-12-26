@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +17,10 @@ public class UserDto {
     private String email;
     private String password;
     private String name;
+    private int score;
+    private String gameId;
+    private List<String> moveIds;
+    private List<String> cardIds;
     private String role;
     private String playerId;
 

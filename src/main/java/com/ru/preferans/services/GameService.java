@@ -4,14 +4,12 @@ import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
 import com.ru.preferans.entities.round.Round;
-import com.ru.preferans.entities.table.Table;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.repositories.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,30 +19,35 @@ public class GameService {
 
     private final GameRepository repository;
 
-    public Game createGame(User player, Table table) {
+    public Game createGame(User player) {
         List<User> players = new ArrayList<>();
         players.add(player);
         var game = Game.builder()
                 .state(GameState.CREATED)
                 .players(players)
-                .table(table)
                 .rounds(new ArrayList<>())
                         .build();
         return repository.save(game);
     }
-    public Game connectPlayer(User player, String gameId) {
-        Game game = getGame(gameId);
+    public Game connectPlayer(User player, Game game) {
         List<User> players = game.getPlayers();
-        players.add(player);
+        if (!players.contains(player)) {
+            players.add(player);
+            player.setGame(game);
+        }
         game.setPlayers(players);
         return saveGame(game);
     }
 
-    public Game disconnectPlayer(User player, String gameId) {
-        Game game = getGame(gameId);
+    public Game disconnectPlayer(User player, Game game) {
         List<User> players = game.getPlayers();
         players.remove(player);
+        player.setGame(null);
         game.setPlayers(players);
+        if(game.getPlayers().isEmpty()) {
+            repository.delete(game);
+            return null;
+        }
         return saveGame(game);
     }
     public Game startGame(String id) {
@@ -56,7 +59,7 @@ public class GameService {
         return repository.save(game);
     }
 
-    private Game getGame(String gameId) {
+    public Game getGame(String gameId) {
         return repository.findById(gameId)
                 .orElseThrow(() -> gameNotFound(gameId));
     }
