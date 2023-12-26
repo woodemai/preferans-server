@@ -37,6 +37,8 @@ public class UserService {
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
                 .name(request.getName())
+                .score(0)
+                .ready(false)
                 .role(UserRole.USER)
                 .build();
         return repository.save(user);
@@ -58,10 +60,17 @@ public class UserService {
                 .password(user.getPassword())
                 .name(user.getName())
                 .score(user.getScore())
+                .ready(user.isReady())
                 .gameId(user.getGame().getId())
                 .moveIds(user.getMoves().stream().map(Move::getId).toList())
                 .cardIds(user.getCards().stream().map(Card::getId).toList())
                 .role(user.getRole().toString())
                 .build();
+    }
+
+    public User switchReady(String playerId) {
+        User user = getById(playerId);
+        user.setReady(!user.isReady());
+        return save(user);
     }
 }

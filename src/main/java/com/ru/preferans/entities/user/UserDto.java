@@ -18,6 +18,7 @@ public class UserDto {
     private String password;
     private String name;
     private int score;
+    private boolean ready;
     private String gameId;
     private List<String> moveIds;
     private List<String> cardIds;

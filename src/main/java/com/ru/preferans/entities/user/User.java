@@ -36,6 +36,7 @@ public class User implements UserDetails {
     private String name;
 
     private int score;
+    private boolean ready;
 
     @ManyToOne
     private Game game;
