@@ -1,13 +1,20 @@
 package com.ru.preferans.controllers;
 
+import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
+import com.ru.preferans.entities.game.GameState;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
+import com.ru.preferans.services.CardService;
 import com.ru.preferans.services.GameService;
 import com.ru.preferans.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +26,9 @@ public class GameController {
 
     private final GameService gameService;
     private final UserService userService;
+    private final CardService cardService;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     @PostMapping("/create")
     public ResponseEntity<GameDto> createGame(@RequestParam String playerId) {
@@ -50,12 +60,6 @@ public class GameController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/start")
-    public ResponseEntity<GameDto> startGame(@RequestParam String gameId) {
-        Game game = gameService.startGame(gameId);
-        GameDto dto = gameService.convertToDto(game);
-        return ResponseEntity.ok(dto);
-    }
 
     @PostMapping("/end")
     public ResponseEntity<GameDto> endGame(@RequestParam String gameId) {
@@ -74,5 +78,20 @@ public class GameController {
     @PutMapping("/ready")
     public ResponseEntity<UserDto> switchReady(@RequestParam String playerId) {
         return ResponseEntity.ok(userService.convertToDto(userService.switchReady(playerId)));
+    }
+
+    @MessageMapping("/change-game")
+    @SendTo("/topic/game")
+    public ResponseEntity<GameDto> processGame (@Payload GameDto dto) {
+        boolean isAllReady = userService.checkAllReady(dto.getPlayerIds());
+        Game game = gameService.getGame(dto.getId());
+        if(isAllReady) {
+            game.setState(GameState.STARTED);
+        }
+        if(game.getState() == GameState.STARTED) {
+            List<Card> cards = cardService.createShuffledDeck();
+            gameService.startGame(game, cards);
+        }
+        return ResponseEntity.ok(gameService.convertToDto(game));
     }
 }

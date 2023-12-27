@@ -1,5 +1,6 @@
 package com.ru.preferans.services;
 
+import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
@@ -18,6 +19,7 @@ import java.util.List;
 public class GameService {
 
     private final GameRepository repository;
+    private final UserService userService;
 
     public Game createGame(User player) {
         List<User> players = new ArrayList<>();
@@ -50,9 +52,16 @@ public class GameService {
         }
         return saveGame(game);
     }
-    public Game startGame(String id) {
-        Game game = getGame(id);
-        game.setState(GameState.STARTED);
+    public Game startGame(Game game, List<Card> cards) {
+        int from = 0;
+        int to = 9;
+        for (User player : game.getPlayers()) {
+            player.setCards(cards.subList(from, to));
+            from +=10;
+            to +=10;
+            userService.save(player);
+        }
+        game.getTable().setCards(cards.subList(29, 31));
         return saveGame(game);
     }
     private Game saveGame(Game game) {
