@@ -1,7 +1,6 @@
 package com.ru.preferans.entities.game;
 
 import com.ru.preferans.entities.round.Round;
-import com.ru.preferans.entities.table.Table;
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -32,12 +31,12 @@ public class Game {
     @OneToMany
     private List<Round> rounds;
 
-    @OneToOne
-    private Table table;
-
     @CreatedDate
-    private Timestamp createdAt;
+    @Column(name = "created_date")
+    private Instant createdDate;
 
     @LastModifiedDate
-    private Timestamp updatedAt;
+    @Column(name = "last_modified_date")
+    private Instant lastModifiedDate;
+
 }

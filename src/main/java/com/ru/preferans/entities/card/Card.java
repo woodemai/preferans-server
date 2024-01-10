@@ -1,17 +1,13 @@
 package com.ru.preferans.entities.card;
 
 import com.ru.preferans.entities.move.Move;
-import com.ru.preferans.entities.table.Table;
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -33,13 +29,4 @@ public class Card {
 
     @ManyToMany
     private List<User> players;
-
-    @ManyToOne
-    private Table table;
-
-    @CreatedDate
-    private Timestamp createdAt;
-
-    @LastModifiedDate
-    private Timestamp updatedAt;
 }

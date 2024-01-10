@@ -15,7 +15,4 @@ public class MoveDto {
     private String playerId;
     private String cardId;
     private String roundId;
-
-    private String createdAt;
-    private String updatedAt;
 }

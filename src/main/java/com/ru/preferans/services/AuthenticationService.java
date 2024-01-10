@@ -35,8 +35,8 @@ public class AuthenticationService {
     public AuthenticationResponse login(AuthenticationRequest request, HttpServletResponse httpServletResponse) {
         User user = userService.getUser(request.getEmail());
         login(request);
-        String refreshToken = tokenService.generateAccessToken(user);
-        String accessToken = tokenService.generateRefreshToken(user);
+        String refreshToken = tokenService.generateRefreshToken(user);
+        String accessToken = tokenService.generateAccessToken(user);
         tokenService.setTokenToRepository(refreshToken, user);
         setTokenToCookie(httpServletResponse, refreshToken);
         return buildResponse(accessToken, user);

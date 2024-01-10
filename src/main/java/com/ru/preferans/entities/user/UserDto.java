@@ -24,7 +24,4 @@ public class UserDto {
     private List<String> cardIds;
     private String role;
     private String playerId;
-
-    private String createdAt;
-    private String updatedAt;
 }

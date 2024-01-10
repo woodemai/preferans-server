@@ -13,6 +13,11 @@ spring:
     password: wooDe.73warehouse
 client:
   url: http://0.0.0.0
+management:
+  endpoints:
+    web:
+      exposure:
+        include : mappings
 ---
 spring:
   config:

@@ -19,7 +19,4 @@ public class CardDto {
     private String rank;
     private List<String> moveIds;
     private List<String> players;
-
-    private String createdAt;
-    private String updatedAt;
 }
