@@ -1,8 +1,6 @@
 package com.ru.preferans.services;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.ru.preferans.entities.game.Game;
-import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
