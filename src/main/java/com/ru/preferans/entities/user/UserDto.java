@@ -15,7 +15,6 @@ public class UserDto {
 
     private String id;
     private String email;
-    private String password;
     private String name;
     private int score;
     private boolean ready;
@@ -23,5 +22,4 @@ public class UserDto {
     private List<String> moveIds;
     private List<String> cardIds;
     private String role;
-    private String playerId;
 }

@@ -83,4 +83,8 @@ public class GameService {
     public List<Game> getAll() {
         return repository.findAll();
     }
+
+    public Game save(Game game) {
+        return repository.save(game);
+    }
 }

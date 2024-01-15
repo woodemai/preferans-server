@@ -73,7 +73,6 @@ public class AuthenticationService {
         var dto = UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .name(user.getName())
                 .role(user.getRole().toString())
                 .build();
