@@ -35,7 +35,7 @@ public class TokenService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, 1000 * 60 * 30L);
+        return generateToken(userDetails, 1000 * 60 * 24 * 30L);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {

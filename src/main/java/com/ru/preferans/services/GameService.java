@@ -63,6 +63,7 @@ public class GameService {
         return repository.findById(gameId)
                 .orElseThrow(() -> gameNotFound(gameId));
     }
+
     public GameDto convertToDto(Game game) {
         return GameDto.builder()
                 .id(game.getId())

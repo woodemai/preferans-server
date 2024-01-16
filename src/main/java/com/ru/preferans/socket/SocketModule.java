@@ -27,7 +27,7 @@ public class SocketModule {
             String playerId = String.join("", params.get("playerId"));
             client.joinRoom(gameId);
             socketService.connectPlayer(client, gameId, playerId);
-            log.info("Socket ID[{}] - room[{}] Connected to chat module through", client.getSessionId().toString(), gameId);
+            log.info("Socket ID[{}] - room[{}]", client.getSessionId().toString(), gameId);
         };
 
     }
@@ -42,4 +42,13 @@ public class SocketModule {
             log.info("Socket ID[{}] - room[{}] disconnected to chat module through", client.getSessionId().toString(), gameId);
         };
     }
+
+//    private DataListener<Game> onUsers() {
+//        return (senderClient, data, ackSender) -> {
+//            log.info(data.toString());
+//            var params = senderClient.getHandshakeData().getUrlParams();
+//            String gameId = String.join("", params.get("gameId"));
+//            socketService.sendPlayer(senderClient, gameId);
+//        };
+//    }
 }

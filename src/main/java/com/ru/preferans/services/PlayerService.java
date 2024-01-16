@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class PlayerService {
 
     private final UserRepository repository;
@@ -32,11 +32,8 @@ public class PlayerService {
                 .build();
     }
 
-    public UserDto disconnect(User user) {
-        return convertToDto(repository.save(user));
-    }
 
-    public List<UserDto> connect(String playerId, String gameId) {
+    public UserDto connect(String playerId, String gameId) {
         Game game = gameService.getGame(gameId);
         User player = repository.findById(playerId).orElseThrow();
 
@@ -46,18 +43,14 @@ public class PlayerService {
         game.setPlayers(players);
         gameService.save(game);
 
-        repository.save(player);
-
-        return game.getPlayers().stream().map(this::convertToDto).toList();
+        return convertToDto(repository.save(player));
     }
 
-    public List<UserDto> disconnect(String playerId, String gameId) {
+    public UserDto disconnect(String playerId, String gameId) {
         Game game = gameService.getGame(gameId);
         User player = repository.findById(playerId).orElseThrow();
 
         player.setGame(null);
-        repository.save(player);
-
-        return game.getPlayers().stream().map(this::convertToDto).toList();
+        return convertToDto(repository.save(player));
     }
 }

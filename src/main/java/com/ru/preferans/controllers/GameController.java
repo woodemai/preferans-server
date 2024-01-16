@@ -69,7 +69,9 @@ public class GameController {
     }
     @GetMapping("/players")
     public ResponseEntity<List<UserDto>> getPlayers(@RequestParam String gameId) {
-        return ResponseEntity.ok(gameService.getGame(gameId).getPlayers().stream().map(userService::convertToDto).toList());
+        List<User> players = userService.getByGame(gameId);
+        List<UserDto> playerDtos = userService.convertListToDto(players);
+        return ResponseEntity.ok(playerDtos);
     }
     @PutMapping("/ready")
     public ResponseEntity<UserDto> switchReady(@RequestParam String playerId) {
