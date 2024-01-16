@@ -22,10 +22,7 @@ public class GameController {
 
     @PostMapping("/create")
     public ResponseEntity<GameDto> createGame(@RequestParam String playerId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.createGame(player);
-        player.setGame(game);
-        userService.save(player);
+        Game game = gameService.create();
         GameDto dto = gameService.convertToDto(game);
         return ResponseEntity.ok(dto);
     }

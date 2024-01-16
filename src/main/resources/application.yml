@@ -11,7 +11,7 @@ spring:
     username: postgres
     password: wooDe.73warehouse
 socket-server:
-  host: 0.0.0.0
+  host: localhost
   port: 8086
 ---
 spring:
