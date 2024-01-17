@@ -28,28 +28,6 @@ public class GameService {
         return repository.save(game);
     }
 
-    public Game connectPlayer(User player, Game game) {
-        List<User> players = game.getPlayers();
-        if (!players.contains(player)) {
-            players.add(player);
-            player.setGame(game);
-        }
-        game.setPlayers(players);
-        return saveGame(game);
-    }
-
-    public Game disconnectPlayer(User player, Game game) {
-        List<User> players = game.getPlayers();
-        players.remove(player);
-        player.setGame(null);
-        game.setPlayers(players);
-        if (game.getPlayers().isEmpty()) {
-            repository.delete(game);
-            return null;
-        }
-        return saveGame(game);
-    }
-
     public Game startGame(String id) {
         Game game = getGame(id);
         game.setState(GameState.STARTED);

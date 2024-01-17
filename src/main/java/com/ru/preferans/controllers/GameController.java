@@ -27,26 +27,6 @@ public class GameController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/connect")
-    public ResponseEntity<GameDto> connectPlayer(@RequestParam String playerId, @RequestParam String gameId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.getGame(gameId);
-        game = gameService.connectPlayer(player, game);
-        return ResponseEntity.ok(gameService.convertToDto(game));
-    }
-
-    @PostMapping("/disconnect")
-    public ResponseEntity<GameDto> disconnectPlayer(@RequestParam String playerId, @RequestParam String gameId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.getGame(gameId);
-        game = gameService.disconnectPlayer(player, game);
-        if(game == null) {
-            return null;
-        }
-        GameDto dto = gameService.convertToDto(game);
-        return ResponseEntity.ok(dto);
-    }
-
     @PostMapping("/start")
     public ResponseEntity<GameDto> startGame(@RequestParam String gameId) {
         Game game = gameService.startGame(gameId);

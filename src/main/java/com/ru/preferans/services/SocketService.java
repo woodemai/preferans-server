@@ -9,28 +9,28 @@ import org.springframework.stereotype.Service;
 public class SocketService {
 
     private final PlayerService playerService;
-    private final GameService gameService;
 
     public void sendUsers(SocketIOClient senderClient, String gameId) {
         for (
                 SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
         ) {
-            if (!client.getSessionId().equals(senderClient.getSessionId())) {
-
-                client.sendEvent("users");
-            }
+            client.sendEvent("users");
         }
     }
 
 
-
     public void connectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
-         playerService.connect(playerId, gameId);
+        playerService.connect(playerId, gameId);
         sendUsers(senderClient, gameId);
     }
 
     public void disconnectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
-         playerService.disconnect(playerId);
+        playerService.disconnect(playerId);
         sendUsers(senderClient, gameId);
+    }
+
+    public void switchReady(SocketIOClient client, String gameId, String playerId) {
+        playerService.switchReady(playerId);
+        sendUsers(client, gameId);
     }
 }

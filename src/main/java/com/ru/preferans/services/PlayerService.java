@@ -39,20 +39,22 @@ public class PlayerService {
     public UserDto connect(String playerId, String gameId) {
         Game game = gameService.getGame(gameId);
         User player = repository.findById(playerId).orElseThrow();
-
         player.setGame(game);
-        List<User> players = game.getPlayers();
-        game.setPlayers(players);
-        gameService.save(game);
 
         return convertToDto(repository.save(player));
     }
 
-    public UserDto disconnect(String playerId) {
-
+    public void disconnect(String playerId) {
         User player = repository.findById(playerId).orElseThrow();
-
         player.setGame(null);
-        return convertToDto(repository.save(player));
+        repository.save(player);
+
+
+    }
+
+    public void switchReady(String playerId) {
+        User player = repository.findById(playerId).orElseThrow();
+        player.setReady(!player.isReady());
+        repository.save(player);
     }
 }
