@@ -19,42 +19,21 @@ public class GameService {
 
     private final GameRepository repository;
 
-    public Game createGame(User player) {
-        List<User> players = new ArrayList<>();
-        players.add(player);
+    public Game create() {
         var game = Game.builder()
                 .state(GameState.CREATED)
-                .players(players)
+                .players(new ArrayList<>())
                 .rounds(new ArrayList<>())
-                        .build();
+                .build();
         return repository.save(game);
     }
-    public Game connectPlayer(User player, Game game) {
-        List<User> players = game.getPlayers();
-        if (!players.contains(player)) {
-            players.add(player);
-            player.setGame(game);
-        }
-        game.setPlayers(players);
-        return saveGame(game);
-    }
 
-    public Game disconnectPlayer(User player, Game game) {
-        List<User> players = game.getPlayers();
-        players.remove(player);
-        player.setGame(null);
-        game.setPlayers(players);
-        if(game.getPlayers().isEmpty()) {
-            repository.delete(game);
-            return null;
-        }
-        return saveGame(game);
-    }
     public Game startGame(String id) {
         Game game = getGame(id);
         game.setState(GameState.STARTED);
         return saveGame(game);
     }
+
     private Game saveGame(Game game) {
         return repository.save(game);
     }
@@ -63,6 +42,7 @@ public class GameService {
         return repository.findById(gameId)
                 .orElseThrow(() -> gameNotFound(gameId));
     }
+
     public GameDto convertToDto(Game game) {
         return GameDto.builder()
                 .id(game.getId())
@@ -71,16 +51,22 @@ public class GameService {
                 .roundIds(game.getRounds().stream().map(Round::getId).toList())
                 .build();
     }
+
     public Game endGame(String gameId) {
         Game game = getGame(gameId);
         game.setState(GameState.ENDED);
         return saveGame(game);
     }
+
     private EntityNotFoundException gameNotFound(String gameId) {
         return new EntityNotFoundException("Game with id " + gameId + " was not found");
     }
 
     public List<Game> getAll() {
         return repository.findAll();
+    }
+
+    public Game save(Game game) {
+        return repository.save(game);
     }
 }

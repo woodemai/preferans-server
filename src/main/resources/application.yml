@@ -2,7 +2,6 @@ spring:
   profiles:
     active: development
   jpa:
-    database: POSTGRESQL
     hibernate.ddl-auto: update
     show-sql: true
   datasource:
@@ -11,13 +10,9 @@ spring:
     url: jdbc:postgresql://db.nehdmglhmjoxjhyxljms.supabase.co:5432/postgres?user=postgres&password=wooDe.73warehouse
     username: postgres
     password: wooDe.73warehouse
-client:
-  url: http://0.0.0.0
-management:
-  endpoints:
-    web:
-      exposure:
-        include : mappings
+socket-server:
+  host: localhost
+  port: 8086
 ---
 spring:
   config:
@@ -29,7 +24,7 @@ spring:
     log-request-details: true
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         "globally_quoted_identifiers": true

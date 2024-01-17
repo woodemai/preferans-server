@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,7 +58,6 @@ public class UserService {
         return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
@@ -67,10 +67,18 @@ public class UserService {
                 .role(user.getRole().toString())
                 .build();
     }
+    public List<UserDto> convertListToDto(List<User> users) {
+        return users.stream().map(this::convertToDto).toList();
+    }
 
     public User switchReady(String playerId) {
         User user = getById(playerId);
         user.setReady(!user.isReady());
         return save(user);
+    }
+
+    public List<User> getByGame(String gameId) {
+        List<User> players = repository.findByGame_Id(gameId);
+        return players;
     }
 }

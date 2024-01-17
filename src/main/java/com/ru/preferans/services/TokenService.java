@@ -5,7 +5,6 @@ import com.ru.preferans.entities.user.User;
 import com.ru.preferans.repositories.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.persistence.EntityExistsException;
@@ -14,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,25 +35,27 @@ public class TokenService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, 1000 * 60 * 30L);
+        return generateToken(userDetails, 1000 * 60 * 24 * 30L);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
         return generateToken(userDetails, 1000 * 60 * 60 * 24 * 15L);
     }
 
+
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
-        return Jwts.builder()
-                .setClaims(extraClaims)
-                .setHeaderParam("typ", "JWT")
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+        return Jwts.builder().claims()
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .add(extraClaims)
+                .and()
+                .signWith(getSignInKey())
                 .compact();
+
     }
 
-    public Key getSignInKey() {
+    public SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -70,11 +71,11 @@ public class TokenService {
 
     private Claims getAllClaims(String token) {
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
+                .parser()
+                .verifyWith(getSignInKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -98,18 +99,13 @@ public class TokenService {
         }
     }
 
-    public Token getByUser(User user) {
-        return repository.getByUser(user)
-                .orElseThrow(this::getNotFound);
-    }
-
     public void setTokenToRepository(String refreshToken, User user) {
         Optional<Token> tokenOpt = repository.getByUser(user);
-        if(tokenOpt.isPresent()) {
+        if (tokenOpt.isPresent()) {
             Token token = tokenOpt.get();
             token.setRefreshToken(refreshToken);
             repository.save(token);
-        }else {
+        } else {
             repository.save(new Token(user, refreshToken));
         }
     }

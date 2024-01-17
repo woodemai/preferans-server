@@ -22,30 +22,7 @@ public class GameController {
 
     @PostMapping("/create")
     public ResponseEntity<GameDto> createGame(@RequestParam String playerId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.createGame(player);
-        player.setGame(game);
-        userService.save(player);
-        GameDto dto = gameService.convertToDto(game);
-        return ResponseEntity.ok(dto);
-    }
-
-    @PostMapping("/connect")
-    public ResponseEntity<GameDto> connectPlayer(@RequestParam String playerId, @RequestParam String gameId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.getGame(gameId);
-        game = gameService.connectPlayer(player, game);
-        return ResponseEntity.ok(gameService.convertToDto(game));
-    }
-
-    @PostMapping("/disconnect")
-    public ResponseEntity<GameDto> disconnectPlayer(@RequestParam String playerId, @RequestParam String gameId) {
-        User player = userService.getById(playerId);
-        Game game = gameService.getGame(gameId);
-        game = gameService.disconnectPlayer(player, game);
-        if(game == null) {
-            return null;
-        }
+        Game game = gameService.create();
         GameDto dto = gameService.convertToDto(game);
         return ResponseEntity.ok(dto);
     }
@@ -69,7 +46,9 @@ public class GameController {
     }
     @GetMapping("/players")
     public ResponseEntity<List<UserDto>> getPlayers(@RequestParam String gameId) {
-        return ResponseEntity.ok(gameService.getGame(gameId).getPlayers().stream().map(userService::convertToDto).toList());
+        List<User> players = userService.getByGame(gameId);
+        List<UserDto> playerDtos = userService.convertListToDto(players);
+        return ResponseEntity.ok(playerDtos);
     }
     @PutMapping("/ready")
     public ResponseEntity<UserDto> switchReady(@RequestParam String playerId) {
