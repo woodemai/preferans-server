@@ -21,6 +21,7 @@ public class SocketService {
 
     public void connectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
         playerService.connect(playerId, gameId);
+        sendAllReady(senderClient, gameId);
         sendUsers(senderClient, gameId);
     }
 
@@ -37,7 +38,6 @@ public class SocketService {
 
     public void sendAllReady(SocketIOClient senderClient, String gameId) {
         if (playerService.checkAllReady(gameId)) {
-
             for (
                     SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
             ) {
@@ -45,5 +45,5 @@ public class SocketService {
             }
         }
     }
-
 }
+

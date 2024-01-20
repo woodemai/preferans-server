@@ -25,23 +25,24 @@ public class PlayerService {
     }
 
     private UserDto convertToDto(User user) {
-        UserDto dto = UserDto.builder()
+        return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
                 .build();
-        if (user.getGame() != null) {
-            dto.setGameId(user.getGame().getId());
-        }
-        return dto;
     }
 
 
     public void connect(String playerId, String gameId) {
         Game game = gameService.getById(gameId);
+        long playersQuantity = repository.countByGame_Id(gameId);
+
+        if (playersQuantity > 3) return;
+
         repository.updateGameById(game, playerId);
+
     }
 
 
@@ -59,7 +60,7 @@ public class PlayerService {
     public boolean checkAllReady(String gameId) {
         List<User> players = repository.findByGame_Id(gameId);
 
-        if (players.size() != 3 && players.size() != 4) {
+        if (players.size() < 3) {
             return false;
         }
         for (User user : players) {

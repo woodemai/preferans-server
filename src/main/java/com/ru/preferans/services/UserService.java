@@ -2,8 +2,6 @@ package com.ru.preferans.services;
 
 
 import com.ru.preferans.entities.auth.RegisterRequest;
-import com.ru.preferans.entities.card.Card;
-import com.ru.preferans.entities.move.Move;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.entities.user.UserRole;
@@ -61,9 +59,6 @@ public class UserService {
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
-                .gameId(user.getGame().getId())
-                .moveIds(user.getMoves().stream().map(Move::getId).toList())
-                .cardIds(user.getCards().stream().map(Card::getId).toList())
                 .role(user.getRole().toString())
                 .build();
     }
@@ -78,7 +73,6 @@ public class UserService {
     }
 
     public List<User> getByGame(String gameId) {
-        List<User> players = repository.findByGame_Id(gameId);
-        return players;
+        return repository.findByGame_Id(gameId);
     }
 }

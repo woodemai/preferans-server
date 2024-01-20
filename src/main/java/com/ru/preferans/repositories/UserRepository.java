@@ -27,7 +27,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("update User u set u.game = ?1 where u.id = ?2")
     void updateGameById(Game game, String id);
 
-
+    @Query("select count(u) from User u where u.game.id = ?1")
+    long countByGame_Id(String id);
 
 
 }

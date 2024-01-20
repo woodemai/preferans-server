@@ -3,8 +3,6 @@ package com.ru.preferans.services;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
 import com.ru.preferans.entities.game.GameState;
-import com.ru.preferans.entities.round.Round;
-import com.ru.preferans.entities.user.User;
 import com.ru.preferans.repositories.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +48,7 @@ public class GameService {
         return GameDto.builder()
                 .id(game.getId())
                 .state(game.getState().toString())
-                .playerIds(game.getPlayers().stream().map(User::getId).toList())
-                .roundIds(game.getRounds().stream().map(Round::getId).toList())
+                .size((short) game.getPlayers().size())
                 .build();
     }
 
@@ -68,4 +65,5 @@ public class GameService {
     public List<Game> getAll() {
         return repository.findAll();
     }
+
 }
