@@ -29,11 +29,11 @@ public class Round implements Serializable {
     @ManyToOne
     private Game game;
 
-    @OneToMany
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Move> moves;
 
-    @OneToMany
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Bet> bets;
 

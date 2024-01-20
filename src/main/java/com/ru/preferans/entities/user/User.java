@@ -37,7 +37,8 @@ public class User implements UserDetails, Serializable {
     private int score;
     private boolean ready;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id", unique = true)
     private Game game;
 
     @OneToMany

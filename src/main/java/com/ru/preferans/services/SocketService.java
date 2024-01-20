@@ -32,5 +32,18 @@ public class SocketService {
     public void switchReady(SocketIOClient client, String gameId, String playerId) {
         playerService.switchReady(playerId);
         sendUsers(client, gameId);
+        sendAllReady(client, gameId);
     }
+
+    public void sendAllReady(SocketIOClient senderClient, String gameId) {
+        if (playerService.checkAllReady(gameId)) {
+
+            for (
+                    SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
+            ) {
+                client.sendEvent("all_ready");
+            }
+        }
+    }
+
 }

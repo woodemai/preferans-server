@@ -21,7 +21,7 @@ public class GameController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<GameDto> createGame(@RequestParam String playerId) {
+    public ResponseEntity<GameDto> createGame() {
         Game game = gameService.create();
         GameDto dto = gameService.convertToDto(game);
         return ResponseEntity.ok(dto);
@@ -29,29 +29,37 @@ public class GameController {
 
     @PostMapping("/start")
     public ResponseEntity<GameDto> startGame(@RequestParam String gameId) {
-        Game game = gameService.startGame(gameId);
+        Game game = gameService.start(gameId);
         GameDto dto = gameService.convertToDto(game);
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/end")
     public ResponseEntity<GameDto> endGame(@RequestParam String gameId) {
-        Game game = gameService.endGame(gameId);
+        Game game = gameService.end(gameId);
         GameDto dto = gameService.convertToDto(game);
         return ResponseEntity.ok(dto);
     }
+
     @GetMapping("/all")
     public ResponseEntity<List<GameDto>> getAll() {
         return ResponseEntity.ok(gameService.getAll().stream().map(gameService::convertToDto).toList());
     }
+
     @GetMapping("/players")
     public ResponseEntity<List<UserDto>> getPlayers(@RequestParam String gameId) {
         List<User> players = userService.getByGame(gameId);
         List<UserDto> playerDtos = userService.convertListToDto(players);
         return ResponseEntity.ok(playerDtos);
     }
+
     @PutMapping("/ready")
     public ResponseEntity<UserDto> switchReady(@RequestParam String playerId) {
         return ResponseEntity.ok(userService.convertToDto(userService.switchReady(playerId)));
+    }
+
+    @GetMapping("/one")
+    public ResponseEntity<GameDto> getOne(@RequestParam String gameId) {
+        return ResponseEntity.ok(gameService.convertToDto(gameService.getById(gameId)));
     }
 }

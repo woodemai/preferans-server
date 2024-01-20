@@ -11,36 +11,39 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
 
+    private static final String NOT_FOUND_MESSAGE = "Game with id '%s' not found";
+
     private final GameRepository repository;
 
     public Game create() {
         var game = Game.builder()
                 .state(GameState.CREATED)
-                .players(new ArrayList<>())
+                .players(new LinkedHashSet<>())
                 .rounds(new ArrayList<>())
                 .build();
         return repository.save(game);
     }
 
-    public Game startGame(String id) {
-        Game game = getGame(id);
+    public Game start(String gameId) {
+        Game game = getById(gameId);
         game.setState(GameState.STARTED);
-        return saveGame(game);
+        return save(game);
     }
 
-    private Game saveGame(Game game) {
+    private Game save(Game game) {
         return repository.save(game);
     }
 
-    public Game getGame(String gameId) {
-        return repository.findById(gameId)
-                .orElseThrow(() -> gameNotFound(gameId));
+    public Game getById(String id) {
+        return repository.findById(id)
+                .orElseThrow(() -> getNotFoundExc(id));
     }
 
     public GameDto convertToDto(Game game) {
@@ -52,21 +55,17 @@ public class GameService {
                 .build();
     }
 
-    public Game endGame(String gameId) {
-        Game game = getGame(gameId);
+    public Game end(String gameId) {
+        Game game = getById(gameId);
         game.setState(GameState.ENDED);
-        return saveGame(game);
+        return save(game);
     }
 
-    private EntityNotFoundException gameNotFound(String gameId) {
-        return new EntityNotFoundException("Game with id " + gameId + " was not found");
+    private EntityNotFoundException getNotFoundExc(String id) {
+        return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
     }
 
     public List<Game> getAll() {
         return repository.findAll();
-    }
-
-    public Game save(Game game) {
-        return repository.save(game);
     }
 }

@@ -4,16 +4,16 @@ import com.ru.preferans.entities.round.Round;
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -29,11 +29,12 @@ public class Game implements Serializable {
     private String id;
     private GameState state;
 
-    @OneToMany
-    @ToString.Exclude
-    private List<User> players;
 
-    @OneToMany
+    @ToString.Exclude
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> players = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Round> rounds;
 
