@@ -17,27 +17,36 @@ public class PlayerService {
     private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
 
     private final UserRepository repository;
-    private final GameService gameService;
+    private final CardService cardService;
 
-    public List<UserDto> getPlayers(String gameId) {
+
+    public List<UserDto> getDtos(String gameId) {
         List<User> players = repository.findByGame_Id(gameId);
         return players.stream().map(this::convertToDto).toList();
     }
 
-    private UserDto convertToDto(User user) {
-        return UserDto.builder()
+    public List<User> getPlayers(String gameId) {
+        return repository.findByGame_Id(gameId);
+    }
+
+    public UserDto convertToDto(User user) {
+        UserDto dto = UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
                 .build();
+        if (user.getCards() != null) {
+            dto.setCards(cardService.convertListToDto(user.getCards()));
+        }
+        return dto;
     }
 
 
-    public void connect(String playerId, String gameId) {
-        Game game = gameService.getById(gameId);
-        long playersQuantity = repository.countByGame_Id(gameId);
+    public void connect(String playerId, Game game) {
+
+        long playersQuantity = repository.countByGame_Id(game.getId());
 
         if (playersQuantity > 3) return;
 
@@ -60,7 +69,7 @@ public class PlayerService {
     public boolean checkAllReady(String gameId) {
         List<User> players = repository.findByGame_Id(gameId);
 
-        if (players.size() < 3) {
+        if (players.size() != 3) {
             return false;
         }
         for (User user : players) {
@@ -68,7 +77,6 @@ public class PlayerService {
                 return false;
             }
         }
-        gameService.start(gameId);
         return true;
     }
 
@@ -76,5 +84,13 @@ public class PlayerService {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
 
+    }
+
+    public User save(User player) {
+        return repository.save(player);
+    }
+
+    public long getGamePlayersQuantity(String id) {
+        return repository.countByGame_Id(id);
     }
 }

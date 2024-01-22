@@ -19,6 +19,6 @@ public class GameSocketController {
     @CrossOrigin
     @GetMapping("/{gameId}")
     public ResponseEntity<List<UserDto>> getPlayers(@PathVariable String gameId) {
-        return ResponseEntity.ok(playerService.getPlayers(gameId));
+        return ResponseEntity.ok(playerService.getDtos(gameId));
     }
 }

@@ -15,5 +15,4 @@ public class BetDto {
 
     private String type;
     private int value;
-    private String roundId;
 }

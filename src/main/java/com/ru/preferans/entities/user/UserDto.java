@@ -1,9 +1,12 @@
 package com.ru.preferans.entities.user;
 
+import com.ru.preferans.entities.card.CardDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +20,5 @@ public class UserDto {
     private int score;
     private boolean ready;
     private String role;
+    private List<CardDto> cards;
 }

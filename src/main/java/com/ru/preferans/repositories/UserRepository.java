@@ -30,5 +30,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("select count(u) from User u where u.game.id = ?1")
     long countByGame_Id(String id);
 
+    @Query("select u from User u where u.game.id = ?1 and u.cards is not null")
+    List<User> findByGame_IdAndCardsNotNull(String id);
+
 
 }

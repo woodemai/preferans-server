@@ -1,6 +1,8 @@
 package com.ru.preferans.services;
 
 import com.corundumstudio.socketio.SocketIOClient;
+import com.ru.preferans.entities.game.Game;
+import com.ru.preferans.entities.game.GameInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,41 +11,41 @@ import org.springframework.stereotype.Service;
 public class SocketService {
 
     private final PlayerService playerService;
+    private final GameService gameService;
 
-    public void sendUsers(SocketIOClient senderClient, String gameId) {
+    private void sendGameInfo(SocketIOClient senderClient, String gameId) {
+        GameInfo gameInfo = gameService.getInfo(gameId);
         for (
                 SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
         ) {
-            client.sendEvent("users");
+            client.sendEvent("info", gameInfo);
         }
     }
 
 
     public void connectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
-        playerService.connect(playerId, gameId);
-        sendAllReady(senderClient, gameId);
-        sendUsers(senderClient, gameId);
+        Game game = gameService.getById(gameId);
+        playerService.connect(playerId, game);
+        sendGameInfo(senderClient, gameId);
     }
+
+
 
     public void disconnectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
         playerService.disconnect(playerId);
-        sendUsers(senderClient, gameId);
+        sendGameInfo(senderClient, gameId);
     }
 
     public void switchReady(SocketIOClient client, String gameId, String playerId) {
         playerService.switchReady(playerId);
-        sendUsers(client, gameId);
-        sendAllReady(client, gameId);
+        sendGameInfo(client, gameId);
+        handleAllReady(client, gameId);
     }
 
-    public void sendAllReady(SocketIOClient senderClient, String gameId) {
+    private void handleAllReady(SocketIOClient client, String gameId) {
         if (playerService.checkAllReady(gameId)) {
-            for (
-                    SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
-            ) {
-                client.sendEvent("all_ready");
-            }
+            gameService.start(gameId);
+            sendGameInfo(client, gameId);
         }
     }
 }
-

@@ -3,20 +3,14 @@ package com.ru.preferans.entities.card;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.UUID;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class CardDto {
-
-    private String id;
-
-    private String suit;
-    private String rank;
-    private List<String> moveIds;
-    private List<String> players;
+    private UUID id;
+    private Rank rank;
+    private Suit suit;
 }

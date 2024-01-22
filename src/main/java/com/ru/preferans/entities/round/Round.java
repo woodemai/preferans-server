@@ -2,7 +2,6 @@ package com.ru.preferans.entities.round;
 
 import com.ru.preferans.entities.bet.Bet;
 import com.ru.preferans.entities.game.Game;
-import com.ru.preferans.entities.move.Move;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -24,14 +23,9 @@ public class Round implements Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private int number;
-    private RoundState state;
 
     @ManyToOne
     private Game game;
-
-    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<Move> moves;
 
     @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude

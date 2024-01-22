@@ -27,20 +27,6 @@ public class GameController {
         return ResponseEntity.ok(dto);
     }
 
-    @PostMapping("/start")
-    public ResponseEntity<GameDto> startGame(@RequestParam String gameId) {
-        Game game = gameService.start(gameId);
-        GameDto dto = gameService.convertToDto(game);
-        return ResponseEntity.ok(dto);
-    }
-
-    @PostMapping("/end")
-    public ResponseEntity<GameDto> endGame(@RequestParam String gameId) {
-        Game game = gameService.end(gameId);
-        GameDto dto = gameService.convertToDto(game);
-        return ResponseEntity.ok(dto);
-    }
-
     @GetMapping("/all")
     public ResponseEntity<List<GameDto>> getAll() {
         return ResponseEntity.ok(gameService.getAll().stream().map(gameService::convertToDto).toList());
