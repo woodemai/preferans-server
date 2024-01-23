@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +21,12 @@ public class PlayerService {
     private final CardService cardService;
 
 
-    public List<UserDto> getDtos(String gameId) {
+    public List<UserDto> getDtos(UUID gameId) {
         List<User> players = repository.findByGame_Id(gameId);
         return players.stream().map(this::convertToDto).toList();
     }
 
-    public List<User> getPlayers(String gameId) {
+    public List<User> getPlayers(UUID gameId) {
         return repository.findByGame_Id(gameId);
     }
 
@@ -44,7 +45,7 @@ public class PlayerService {
     }
 
 
-    public void connect(String playerId, Game game) {
+    public void connect(UUID playerId, Game game) {
 
         long playersQuantity = repository.countByGame_Id(game.getId());
 
@@ -55,18 +56,18 @@ public class PlayerService {
     }
 
 
-    public void disconnect(String id) {
+    public void disconnect(UUID id) {
         repository.updateReadyAndGameById(id);
     }
 
-    public void switchReady(String id) {
+    public void switchReady(UUID id) {
         User player = getById(id);
         player.setReady(!player.isReady());
         repository.save(player);
     }
 
 
-    public boolean checkAllReady(String gameId) {
+    public boolean checkAllReady(UUID gameId) {
         List<User> players = repository.findByGame_Id(gameId);
 
         if (players.size() != 3) {
@@ -80,17 +81,18 @@ public class PlayerService {
         return true;
     }
 
-    private User getById(String id) {
+    private User getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
 
     }
 
-    public User save(User player) {
-        return repository.save(player);
+    public void save(User player) {
+        repository.save(player);
     }
 
-    public long getGamePlayersQuantity(String id) {
+    public long getGamePlayersQuantity(UUID id) {
         return repository.countByGame_Id(id);
     }
+
 }

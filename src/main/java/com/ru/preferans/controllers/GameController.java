@@ -2,13 +2,13 @@ package com.ru.preferans.controllers;
 
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.game.GameDto;
-import com.ru.preferans.entities.user.User;
-import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.services.GameService;
-import com.ru.preferans.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,7 +18,6 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
-    private final UserService userService;
 
     @PostMapping("/create")
     public ResponseEntity<GameDto> createGame() {
@@ -30,22 +29,5 @@ public class GameController {
     @GetMapping("/all")
     public ResponseEntity<List<GameDto>> getAll() {
         return ResponseEntity.ok(gameService.getAll().stream().map(gameService::convertToDto).toList());
-    }
-
-    @GetMapping("/players")
-    public ResponseEntity<List<UserDto>> getPlayers(@RequestParam String gameId) {
-        List<User> players = userService.getByGame(gameId);
-        List<UserDto> playerDtos = userService.convertListToDto(players);
-        return ResponseEntity.ok(playerDtos);
-    }
-
-    @PutMapping("/ready")
-    public ResponseEntity<UserDto> switchReady(@RequestParam String playerId) {
-        return ResponseEntity.ok(userService.convertToDto(userService.switchReady(playerId)));
-    }
-
-    @GetMapping("/one")
-    public ResponseEntity<GameDto> getOne(@RequestParam String gameId) {
-        return ResponseEntity.ok(gameService.convertToDto(gameService.getById(gameId)));
     }
 }

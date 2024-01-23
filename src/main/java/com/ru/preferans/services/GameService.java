@@ -28,12 +28,11 @@ public class GameService {
         var game = Game.builder()
                 .state(GameState.CREATED)
                 .players(new LinkedHashSet<>())
-                .rounds(new ArrayList<>())
                 .build();
         return save(game);
     }
 
-    public void start(String id) {
+    public void start(UUID id) {
         List<User> players = playerService.getPlayers(id);
         List<Card> cards = cardService.getShuffleDeck();
         Game game = getById(id);
@@ -58,7 +57,7 @@ public class GameService {
         return repository.save(game);
     }
 
-    public Game getById(String id) {
+    public Game getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> getNotFoundExc(id));
     }
@@ -67,12 +66,13 @@ public class GameService {
         long size = playerService.getGamePlayersQuantity(game.getId());
         return GameDto.builder()
                 .id(game.getId())
-                .state(game.getState().toString())
+                .state(game.getState())
                 .size((short) size)
+                .cards(cardService.convertListToDto(game.getTableCards()))
                 .build();
     }
 
-    private EntityNotFoundException getNotFoundExc(String id) {
+    private EntityNotFoundException getNotFoundExc(UUID id) {
         return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
     }
 
@@ -80,7 +80,7 @@ public class GameService {
         return repository.findAll();
     }
 
-    public GameInfo getInfo(String id) {
+    public GameInfo getInfo(UUID id) {
         List<UserDto> users = playerService.getDtos(id);
         GameDto game = convertToDto(getById(id));
         return GameInfo.builder()
@@ -88,4 +88,5 @@ public class GameService {
                 .game(game)
                 .build();
     }
+
 }

@@ -1,17 +1,13 @@
 package com.ru.preferans.entities.game;
 
 import com.ru.preferans.entities.card.Card;
-import com.ru.preferans.entities.round.Round;
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -24,21 +20,20 @@ public class Game implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     private GameState state;
 
     @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Card> tableCards;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> players = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<Round> rounds;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private User currentPlayer;
 
     @Override
     public final boolean equals(Object o) {

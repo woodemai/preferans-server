@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -32,9 +33,9 @@ public class SocketModule {
     private ConnectListener onConnected() {
         return client -> {
             var params = client.getHandshakeData().getUrlParams();
-            String gameId = getParam(params, GAME_ID);
-            String playerId = getParam(params, PLAYER_ID);
-            client.joinRoom(gameId);
+            UUID gameId = getParam(params, GAME_ID);
+            UUID playerId = getParam(params, PLAYER_ID);
+            client.joinRoom(gameId.toString());
             socketService.connectPlayer(client, gameId, playerId);
             log.info("USER [{}] connected to game [{}]", playerId, gameId);
         };
@@ -44,9 +45,9 @@ public class SocketModule {
     private DisconnectListener onDisconnected() {
         return client -> {
             var params = client.getHandshakeData().getUrlParams();
-            String gameId = getParam(params, GAME_ID);
-            String playerId = getParam(params, PLAYER_ID);
-            client.leaveRoom(gameId);
+            UUID gameId = getParam(params, GAME_ID);
+            UUID playerId = getParam(params, PLAYER_ID);
+            client.leaveRoom(gameId.toString());
             socketService.disconnectPlayer(client, gameId, playerId);
             log.info("USER [{}] disconnected from game [{}]", playerId, gameId);
         };
@@ -55,13 +56,14 @@ public class SocketModule {
     private DataListener<Game> onSwitchReady() {
         return (client, game, ackRequest) -> {
             var params = client.getHandshakeData().getUrlParams();
-            String gameId = getParam(params, GAME_ID);
-            String playerId = getParam(params, PLAYER_ID);
+            UUID gameId = getParam(params, GAME_ID);
+            UUID playerId = getParam(params, PLAYER_ID);
             socketService.switchReady(client, gameId, playerId);
         };
     }
 
-    private String getParam(Map<String, List<String>> params, String param) {
-        return String.join("", params.get(param));
+
+    private UUID getParam(Map<String, List<String>> params, String param) {
+        return UUID.fromString(String.join("", params.get(param)));
     }
 }

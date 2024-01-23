@@ -43,9 +43,9 @@ public class CardService {
     }
 
     public List<CardDto> convertListToDto(List<Card> cards) {
-        List<CardDto> cardDtos = new ArrayList<>();
+        List<CardDto> cardDTOs = new ArrayList<>();
         for (Card card : cards) {
-            cardDtos.add(
+            cardDTOs.add(
                     CardDto.builder()
                             .id(card.getId())
                             .suit(card.getSuit())
@@ -53,6 +53,6 @@ public class CardService {
                             .build()
             );
         }
-        return cardDtos;
+        return cardDTOs;
     }
 }
