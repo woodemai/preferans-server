@@ -17,7 +17,7 @@ import java.util.*;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
@@ -25,7 +25,7 @@ public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private final UUID id = UUID.randomUUID();
 
     private String email;
 
@@ -33,17 +33,22 @@ public class User implements UserDetails, Serializable {
 
     private String name;
 
-    private int score;
+    @Builder.Default
+    private int score = 0;
 
-    private boolean ready;
+    @Builder.Default
+    private boolean ready = false;
 
+    @Builder.Default
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
-    private Game game;
+    private Game game = null;
 
     @ToString.Exclude
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Card> cards = new ArrayList<>();
+
 
     @Enumerated(EnumType.STRING)
     private UserRole role;

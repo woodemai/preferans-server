@@ -13,27 +13,31 @@ import java.util.*;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Game implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private final UUID id = UUID.randomUUID();
 
-    private GameState state;
+    @Builder.Default
+    private GameState state = GameState.CREATED;
 
     @ToString.Exclude
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Card> tableCards;
+    private List<Card> tableCards = new ArrayList<>();
 
     @ToString.Exclude
+    @Builder.Default
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> players = new LinkedHashSet<>();
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private User currentPlayer;
+    @Builder.Default
+    private User currentPlayer = null;
 
     @Override
     public final boolean equals(Object o) {
