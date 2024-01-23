@@ -1,36 +1,61 @@
 package com.ru.preferans.services;
 
 import com.corundumstudio.socketio.SocketIOClient;
+import com.ru.preferans.entities.game.Game;
+import com.ru.preferans.entities.game.GameInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SocketService {
 
     private final PlayerService playerService;
+    private final GameService gameService;
 
-    public void sendUsers(SocketIOClient senderClient, String gameId) {
+    private void sendGameInfo(SocketIOClient senderClient, UUID gameId) {
+        GameInfo gameInfo = gameService.getInfo(gameId);
         for (
-                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId).getClients()
+                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId.toString()).getClients()
         ) {
-            client.sendEvent("users");
+            client.sendEvent("info", gameInfo);
+        }
+    }
+    private void sendAllReady(SocketIOClient senderClient, UUID gameId) {
+        for (
+                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId.toString()).getClients()
+        ) {
+            client.sendEvent("all_ready");
         }
     }
 
 
-    public void connectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
-        playerService.connect(playerId, gameId);
-        sendUsers(senderClient, gameId);
+    public void connectPlayer(SocketIOClient senderClient, UUID gameId, UUID playerId) {
+        Game game = gameService.getById(gameId);
+        playerService.connect(playerId, game);
+        sendGameInfo(senderClient, gameId);
     }
 
-    public void disconnectPlayer(SocketIOClient senderClient, String gameId, String playerId) {
+
+
+    public void disconnectPlayer(SocketIOClient senderClient, UUID gameId, UUID playerId) {
         playerService.disconnect(playerId);
-        sendUsers(senderClient, gameId);
+        sendGameInfo(senderClient, gameId);
     }
 
-    public void switchReady(SocketIOClient client, String gameId, String playerId) {
+    public void switchReady(SocketIOClient client, UUID gameId, UUID playerId) {
         playerService.switchReady(playerId);
-        sendUsers(client, gameId);
+        sendGameInfo(client, gameId);
+        handleAllReady(client, gameId);
+    }
+
+    private void handleAllReady(SocketIOClient client, UUID gameId) {
+        if (playerService.checkAllReady(gameId)) {
+            sendAllReady(client, gameId);
+            gameService.start(gameId);
+            sendGameInfo(client, gameId);
+        }
     }
 }

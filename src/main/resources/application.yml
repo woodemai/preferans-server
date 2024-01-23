@@ -7,6 +7,7 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
+    # noinspection SpellCheckingInspection
     url: jdbc:postgresql://db.nehdmglhmjoxjhyxljms.supabase.co:5432/postgres?user=postgres&password=wooDe.73warehouse
     username: postgres
     password: wooDe.73warehouse

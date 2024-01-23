@@ -4,24 +4,33 @@ import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class PlayerService {
 
-    private final UserRepository repository;
-    private final GameService gameService;
+    private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
 
-    public List<UserDto> getPlayers(String gameId) {
+    private final UserRepository repository;
+    private final CardService cardService;
+
+
+    public List<UserDto> getDtos(UUID gameId) {
         List<User> players = repository.findByGame_Id(gameId);
         return players.stream().map(this::convertToDto).toList();
     }
 
-    private UserDto convertToDto(User user) {
+    public List<User> getPlayers(UUID gameId) {
+        return repository.findByGame_Id(gameId);
+    }
+
+    public UserDto convertToDto(User user) {
         UserDto dto = UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -29,32 +38,61 @@ public class PlayerService {
                 .score(user.getScore())
                 .ready(user.isReady())
                 .build();
-        if (user.getGame() != null) {
-            dto.setGameId(user.getGame().getId());
+        if (user.getCards() != null) {
+            dto.setCards(cardService.convertListToDto(user.getCards()));
         }
         return dto;
     }
 
 
-    public UserDto connect(String playerId, String gameId) {
-        Game game = gameService.getGame(gameId);
-        User player = repository.findById(playerId).orElseThrow();
-        player.setGame(game);
+    public void connect(UUID playerId, Game game) {
 
-        return convertToDto(repository.save(player));
-    }
+        long playersQuantity = repository.countByGame_Id(game.getId());
 
-    public void disconnect(String playerId) {
-        User player = repository.findById(playerId).orElseThrow();
-        player.setGame(null);
-        repository.save(player);
+        if (playersQuantity > 3) return;
 
+        repository.updateGameById(game, playerId);
 
     }
 
-    public void switchReady(String playerId) {
-        User player = repository.findById(playerId).orElseThrow();
+
+    public void disconnect(UUID id) {
+        repository.updateReadyAndGameById(id);
+    }
+
+    public void switchReady(UUID id) {
+        User player = getById(id);
         player.setReady(!player.isReady());
         repository.save(player);
     }
+
+
+    public boolean checkAllReady(UUID gameId) {
+        List<User> players = repository.findByGame_Id(gameId);
+
+        if (players.size() != 3) {
+            return false;
+        }
+        for (User user : players) {
+            if (!user.isReady()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private User getById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
+
+    }
+
+    public void save(User player) {
+        repository.save(player);
+    }
+
+    public long getGamePlayersQuantity(UUID id) {
+        return repository.countByGame_Id(id);
+    }
+
 }

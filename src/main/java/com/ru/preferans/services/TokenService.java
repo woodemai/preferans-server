@@ -92,7 +92,7 @@ public class TokenService {
     }
 
     public void checkEquals(String token) {
-        Token dbToken = repository.getByRefreshToken(token)
+        Token dbToken = repository.findByRefreshToken(token)
                 .orElseThrow(this::getNotFound);
         if (!dbToken.getRefreshToken().equals(token)) {
             throw new EntityExistsException("Tokens are not equal");
@@ -111,7 +111,7 @@ public class TokenService {
     }
 
     public void deleteToken(String token) {
-        repository.delete(repository.getByRefreshToken(token)
+        repository.delete(repository.findByRefreshToken(token)
                 .orElseThrow(this::getNotFound));
     }
 }

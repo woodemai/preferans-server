@@ -2,19 +2,23 @@ package com.ru.preferans.entities.token;
 
 import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
-@Data
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.UUID;
+
+@Getter
+@Setter
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
-public class Token {
+@RequiredArgsConstructor
+public class Token implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @OneToOne
     private User user;
@@ -24,5 +28,21 @@ public class Token {
     public Token(User user, String refreshToken) {
         this.user = user;
         this.refreshToken = refreshToken;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Token token = (Token) o;
+        return getId() != null && Objects.equals(getId(), token.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

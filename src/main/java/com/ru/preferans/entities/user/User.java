@@ -2,7 +2,7 @@ package com.ru.preferans.entities.user;
 
 import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
-import com.ru.preferans.entities.move.Move;
+import com.ru.preferans.entities.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -11,15 +11,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "users")
@@ -27,29 +25,36 @@ public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private final UUID id = UUID.randomUUID();
 
     private String email;
+
     private String password;
 
     private String name;
 
-    private int score;
-    private boolean ready;
+    @Builder.Default
+    private int score = 0;
 
-    @ManyToOne
-    private Game game;
+    @Builder.Default
+    private boolean ready = false;
 
-    @OneToMany
+    @Builder.Default
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id")
+    private Game game = null;
+
     @ToString.Exclude
-    private List<Move> moves;
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Card> cards = new ArrayList<>();
 
-    @ManyToMany
-    @ToString.Exclude
-    private List<Card> cards;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToOne
+    private Token token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -91,7 +96,7 @@ public class User implements UserDetails, Serializable {
         if (this == o) return true;
         if (o == null) return false;
         Class<?> oEffectiveClass = o instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy hibernateProxy? hibernateProxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         User user = (User) o;
         return getId() != null && Objects.equals(getId(), user.getId());
@@ -99,6 +104,6 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public final int hashCode() {
-        return this instanceof HibernateProxy hibernateProxy? hibernateProxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+        return this instanceof HibernateProxy hibernateProxy ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
