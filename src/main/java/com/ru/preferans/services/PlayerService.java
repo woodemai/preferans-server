@@ -1,5 +1,8 @@
 package com.ru.preferans.services;
 
+import com.ru.preferans.entities.bet.Bet;
+import com.ru.preferans.entities.bet.BetType;
+import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
@@ -22,7 +25,7 @@ public class PlayerService {
 
 
     public List<UserDto> getDTOs(UUID gameId) {
-        List<User> players = repository.findByGame_Id(gameId);
+        List<User> players = repository.findByGame_IdOrderByEmailAsc(gameId);
         return players.stream().map(this::convertToDTO).toList();
     }
 
@@ -37,6 +40,7 @@ public class PlayerService {
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
+
                 .build();
         if (user.getCards() != null) {
             dto.setCards(cardService.convertListToDto(user.getCards()));
@@ -81,7 +85,7 @@ public class PlayerService {
         return true;
     }
 
-    private User getById(UUID id) {
+    public User getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
 
@@ -91,8 +95,29 @@ public class PlayerService {
         repository.save(player);
     }
 
-    public long getGamePlayersQuantity(UUID id) {
+    public short getGamePlayersQuantity(UUID id) {
         return repository.countByGame_Id(id);
     }
 
+    public void setBet(Bet bet, UUID playerId) {
+        repository.updateBetById(bet, playerId);
+    }
+
+    public boolean handleAllPassed(UUID gameId) {
+        List<User> players = getPlayers(gameId);
+        for (User player : players) {
+            if (player.getBet().getType() != BetType.PASS) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void removeCard(UUID playerId, Card card) {
+        User player = getById(playerId);
+        List<Card> cards = player.getCards();
+        cards.removeIf(card1 -> card1.getId().equals(card.getId()));
+        player.setCards(cards);
+        save(player);
+    }
 }

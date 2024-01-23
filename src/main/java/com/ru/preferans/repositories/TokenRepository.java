@@ -21,8 +21,6 @@ public interface TokenRepository extends JpaRepository<Token, UUID>, JpaSpecific
     Optional<Token> findByRefreshToken(String refreshToken);
 
 
-    Optional<Token> getByUser(User user);
-
     @Query("select (count(t) > 0) from Token t where t.user = ?1")
     boolean existsByUser(User user);
 
@@ -34,7 +32,7 @@ public interface TokenRepository extends JpaRepository<Token, UUID>, JpaSpecific
     @Transactional
     @Modifying
     @Query("delete from Token t where t.refreshToken = ?1")
-    int deleteByRefreshToken(String refreshToken);
+    void deleteByRefreshToken(String refreshToken);
 
 
 }

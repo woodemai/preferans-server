@@ -1,5 +1,6 @@
 package com.ru.preferans.entities.user;
 
+import com.ru.preferans.entities.bet.Bet;
 import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.token.Token;
@@ -49,6 +50,9 @@ public class User implements UserDetails, Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Card> cards = new ArrayList<>();
 
+    @Builder.Default
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Bet bet = null;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;

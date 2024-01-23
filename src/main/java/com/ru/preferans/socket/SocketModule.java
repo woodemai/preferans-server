@@ -4,6 +4,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.ru.preferans.entities.bet.Bet;
+import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.services.SocketService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,9 @@ public class SocketModule {
         server.addConnectListener(this.onConnected());
         server.addDisconnectListener(this.onDisconnected());
         server.addEventListener("switch_ready", Game.class, this.onSwitchReady());
+        server.addEventListener("send_bet", Bet.class, this.onBet());
+        server.addEventListener("send_card", Card.class, this.onCard());
+
     }
 
 
@@ -59,6 +64,22 @@ public class SocketModule {
             UUID gameId = getParam(params, GAME_ID);
             UUID playerId = getParam(params, PLAYER_ID);
             socketService.switchReady(client, gameId, playerId);
+        };
+    }
+    private DataListener<Bet> onBet() {
+        return (client, bet, ackRequest) -> {
+            var params = client.getHandshakeData().getUrlParams();
+            UUID gameId = getParam(params, GAME_ID);
+            UUID playerId = getParam(params, PLAYER_ID);
+            socketService.handleBet(client, gameId, playerId, bet);
+        };
+    }
+    private DataListener<Card> onCard() {
+        return (client, card, ackRequest) -> {
+            var params = client.getHandshakeData().getUrlParams();
+            UUID gameId = getParam(params, GAME_ID);
+            UUID playerId = getParam(params, PLAYER_ID);
+            socketService.handleCard(client, gameId, playerId, card);
         };
     }
 

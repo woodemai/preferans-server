@@ -5,6 +5,7 @@ import com.ru.preferans.entities.card.CardDto;
 import com.ru.preferans.entities.card.Rank;
 import com.ru.preferans.entities.card.Suit;
 import com.ru.preferans.repositories.CardRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,8 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class CardService {
+
+    private static final String NOT_FOUND_MESSAGE = "Card with ID '%s' not found";
 
     private final CardRepository cardRepository;
 
@@ -54,5 +57,14 @@ public class CardService {
             );
         }
         return cardDTOs;
+    }
+
+    public Card getById(UUID cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> getNotFoundExc(cardId));
+    }
+
+    private EntityNotFoundException getNotFoundExc(UUID id) {
+        return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
     }
 }

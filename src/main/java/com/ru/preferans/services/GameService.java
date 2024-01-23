@@ -1,10 +1,8 @@
 package com.ru.preferans.services;
 
 import com.ru.preferans.entities.card.Card;
-import com.ru.preferans.entities.game.Game;
-import com.ru.preferans.entities.game.GameDto;
-import com.ru.preferans.entities.game.GameInfo;
-import com.ru.preferans.entities.game.GameState;
+import com.ru.preferans.entities.card.CardDto;
+import com.ru.preferans.entities.game.*;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.repositories.GameRepository;
@@ -43,10 +41,17 @@ public class GameService {
             start += 10;
             end += 10;
         }
-
         game.setTableCards(cards.subList(30, 32));
-        game.setState(GameState.STARTED);
+        game.setState(GameState.TRADING);
         repository.save(game);
+    }
+
+    private short getNextPlayerIndex(short currentIndex) {
+        if (currentIndex < 3 - 1) {
+            return ++currentIndex;
+        } else {
+            return 0;
+        }
     }
 
     private Game save(Game game) {
@@ -59,12 +64,13 @@ public class GameService {
     }
 
     public GameDto convertToDto(Game game) {
-        long size = playerService.getGamePlayersQuantity(game.getId());
+        short size = playerService.getGamePlayersQuantity(game.getId());
         return GameDto.builder()
                 .id(game.getId())
                 .state(game.getState())
-                .size((short) size)
+                .size(size)
                 .cards(cardService.convertListToDto(game.getTableCards()))
+                .currentPlayerIndex(game.getCurrentPlayerIndex())
                 .build();
     }
 
@@ -85,4 +91,36 @@ public class GameService {
                 .build();
     }
 
+    public void nextTurn(UUID gameId) {
+        Game game = getById(gameId);
+        game.setCurrentPlayerIndex(getNextPlayerIndex(game.getCurrentPlayerIndex()));
+        save(game);
+    }
+
+    public void setState(GameState state, UUID gameId) {
+        repository.updateStateAndCurrentPlayerIndexById(state, (short) 0,gameId);
+    }
+
+    public boolean allBet(UUID gameId) {
+        return repository.existsByIdAndCurrentPlayerIndex(gameId, (short) 2);
+    }
+
+    public void addCard(UUID gameId, Card card) {
+        Game game = getById(gameId);
+        List<Card> cards = game.getTableCards();
+        cards.add(card);
+        game.setTableCards(cards);
+        save(game);
+    }
+
+    public MoveInfo getMoveInfo(UUID playerId, Card card) {
+        return MoveInfo.builder()
+                .playerId(playerId.toString())
+                .card(CardDto.builder()
+                        .id(card.getId())
+                        .suit(card.getSuit())
+                        .rank(card.getRank())
+                        .build())
+                .build();
+    }
 }
