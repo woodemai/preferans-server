@@ -13,22 +13,18 @@ import java.util.UUID;
 @Setter
 @Entity
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Token implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private final UUID id = UUID.randomUUID();
 
     @OneToOne
     private User user;
 
     private String refreshToken;
-
-    public Token(User user, String refreshToken) {
-        this.user = user;
-        this.refreshToken = refreshToken;
-    }
 
     @Override
     public final boolean equals(Object o) {

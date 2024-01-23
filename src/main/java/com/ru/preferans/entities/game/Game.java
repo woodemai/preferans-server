@@ -35,9 +35,8 @@ public class Game implements Serializable {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> players = new LinkedHashSet<>();
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private User currentPlayer = null;
+    private short currentPlayerIndex = 0;
 
     @Override
     public final boolean equals(Object o) {

@@ -19,4 +19,5 @@ public class GameDto {
     private GameState state;
     private short size;
     private List<CardDto> cards;
+    private short currentPlayerIndex;
 }
