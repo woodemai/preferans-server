@@ -25,11 +25,7 @@ public class GameService {
     private final PlayerService playerService;
 
     public Game create() {
-        var game = Game.builder()
-                .state(GameState.CREATED)
-                .players(new LinkedHashSet<>())
-                .build();
-        return save(game);
+        return save(Game.builder().build());
     }
 
     public void start(UUID id) {
@@ -81,7 +77,7 @@ public class GameService {
     }
 
     public GameInfo getInfo(UUID id) {
-        List<UserDto> users = playerService.getDtos(id);
+        List<UserDto> users = playerService.getDTOs(id);
         GameDto game = convertToDto(getById(id));
         return GameInfo.builder()
                 .users(users)

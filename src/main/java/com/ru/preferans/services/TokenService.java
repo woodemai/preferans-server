@@ -17,7 +17,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -60,7 +59,7 @@ public class TokenService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return getClaim(token, Claims::getSubject);
     }
 
@@ -79,7 +78,7 @@ public class TokenService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = getUsername(token);
+        final String username = getEmail(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
@@ -99,19 +98,15 @@ public class TokenService {
         }
     }
 
-    public void setTokenToRepository(String refreshToken, User user) {
-        Optional<Token> tokenOpt = repository.getByUser(user);
-        if (tokenOpt.isPresent()) {
-            Token token = tokenOpt.get();
-            token.setRefreshToken(refreshToken);
-            repository.save(token);
+    public void save(String refreshToken, User user) {
+        if (repository.existsByUser(user)) {
+            repository.updateRefreshTokenByUser(refreshToken, user);
         } else {
-            repository.save(new Token(user, refreshToken));
+            repository.save(Token.builder().refreshToken(refreshToken).user(user).build());
         }
     }
 
     public void deleteToken(String token) {
-        repository.delete(repository.findByRefreshToken(token)
-                .orElseThrow(this::getNotFound));
+        repository.deleteByRefreshToken(token);
     }
 }

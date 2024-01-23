@@ -11,34 +11,40 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
+    private static final String EXISTS_MESSAGE = "User with email '%s' already exists";
+
     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
-    public User getUser(String email) {
+    public User getByEmail(String email) {
         return repository.getByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User with email " + email + "not found"));
+                .orElseThrow(() -> getNotFoundExc(email));
     }
 
-    public User setUser(RegisterRequest request) {
-        Optional<User> optUser = repository.getByEmail(request.getEmail());
-        if (optUser.isPresent()) {
-            throw new EntityExistsException("User with email: " + request.getEmail() + " already exists");
+    public User save(RegisterRequest request) {
+        if (!repository.existsByEmail(request.getEmail())) {
+            return repository.save(User.builder()
+                    .email(request.getEmail())
+                    .password(encoder.encode(request.getPassword()))
+                    .name(request.getName())
+                    .role(UserRole.USER)
+                    .build());
+        } else {
+            throw getExistsExc(request.getEmail());
         }
-        var user = User.builder()
-                .email(request.getEmail())
-                .password(encoder.encode(request.getPassword()))
-                .name(request.getName())
-                .score(0)
-                .ready(false)
-                .role(UserRole.USER)
-                .build();
-        return repository.save(user);
+    }
+
+    private EntityNotFoundException getNotFoundExc(String email) {
+        return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, email));
+    }
+
+    private EntityExistsException getExistsExc(String email) {
+        return new EntityExistsException(String.format(EXISTS_MESSAGE, email));
     }
 
 }

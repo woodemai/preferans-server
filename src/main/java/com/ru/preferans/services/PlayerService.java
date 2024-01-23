@@ -21,16 +21,16 @@ public class PlayerService {
     private final CardService cardService;
 
 
-    public List<UserDto> getDtos(UUID gameId) {
+    public List<UserDto> getDTOs(UUID gameId) {
         List<User> players = repository.findByGame_Id(gameId);
-        return players.stream().map(this::convertToDto).toList();
+        return players.stream().map(this::convertToDTO).toList();
     }
 
     public List<User> getPlayers(UUID gameId) {
         return repository.findByGame_Id(gameId);
     }
 
-    public UserDto convertToDto(User user) {
+    public UserDto convertToDTO(User user) {
         UserDto dto = UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())

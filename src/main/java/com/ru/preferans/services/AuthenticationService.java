@@ -23,32 +23,32 @@ public class AuthenticationService {
     private final UserService userService;
 
     public AuthenticationResponse registration(RegisterRequest request, HttpServletResponse httpServletResponse) {
-        User user = userService.setUser(request);
+        User user = userService.save(request);
         login(request);
         String refreshToken = tokenService.generateRefreshToken(user);
         String accessToken = tokenService.generateAccessToken(user);
-        tokenService.setTokenToRepository(refreshToken, user);
+        tokenService.save(refreshToken, user);
         setTokenToCookie(httpServletResponse, refreshToken);
         return buildResponse(accessToken, user);
     }
 
     public AuthenticationResponse login(AuthenticationRequest request, HttpServletResponse httpServletResponse) {
-        User user = userService.getUser(request.getEmail());
+        User user = userService.getByEmail(request.getEmail());
         login(request);
         String refreshToken = tokenService.generateRefreshToken(user);
         String accessToken = tokenService.generateAccessToken(user);
-        tokenService.setTokenToRepository(refreshToken, user);
+        tokenService.save(refreshToken, user);
         setTokenToCookie(httpServletResponse, refreshToken);
         return buildResponse(accessToken, user);
     }
 
     public AuthenticationResponse refresh(String requestToken, HttpServletResponse httpServletResponse) {
         tokenService.checkEquals(requestToken);
-        String email = tokenService.getUsername(requestToken);
-        User user = userService.getUser(email);
+        String email = tokenService.getEmail(requestToken);
+        User user = userService.getByEmail(email);
         String refreshToken = tokenService.generateAccessToken(user);
         String accessToken = tokenService.generateRefreshToken(user);
-        tokenService.setTokenToRepository(refreshToken, user);
+        tokenService.save(refreshToken, user);
         setTokenToCookie(httpServletResponse, refreshToken);
         return buildResponse(accessToken, user);
     }

@@ -32,4 +32,8 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("select count(u) from User u where u.game.id = ?1")
     long countByGame_Id(UUID id);
 
+    @Query("select (count(u) > 0) from User u where u.email = ?1")
+    boolean existsByEmail(String email);
+
+
 }
