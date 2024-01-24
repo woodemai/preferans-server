@@ -26,7 +26,7 @@ public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private final UUID id = UUID.randomUUID();
+    private UUID id;
 
     private String email;
 
@@ -47,8 +47,9 @@ public class User implements UserDetails, Serializable {
 
     @ToString.Exclude
     @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Card> cards = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "user_cards")
+    private Set<Card> cards = new HashSet<>();
 
     @Builder.Default
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

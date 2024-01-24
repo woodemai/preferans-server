@@ -43,7 +43,7 @@ public class PlayerService {
 
                 .build();
         if (user.getCards() != null) {
-            dto.setCards(cardService.convertListToDto(user.getCards()));
+            dto.setCards(user.getCards());
         }
         return dto;
     }
@@ -61,7 +61,7 @@ public class PlayerService {
 
 
     public void disconnect(UUID id) {
-        repository.updateReadyAndGameById(id);
+        repository.reset(id);
     }
 
     public void switchReady(UUID id) {
@@ -106,7 +106,7 @@ public class PlayerService {
     public boolean handleAllPassed(UUID gameId) {
         List<User> players = getPlayers(gameId);
         for (User player : players) {
-            if (player.getBet().getType() != BetType.PASS) {
+            if (player.getBet() != null && player.getBet().getType() != BetType.PASS) {
                 return false;
             }
         }
@@ -115,9 +115,11 @@ public class PlayerService {
 
     public void removeCard(UUID playerId, Card card) {
         User player = getById(playerId);
-        List<Card> cards = player.getCards();
-        cards.removeIf(card1 -> card1.getId().equals(card.getId()));
-        player.setCards(cards);
+        player.getCards().removeIf(card1 -> card1.getId().equals(card.getId()));
         save(player);
+    }
+
+    public boolean allBet(UUID gameId) {
+        return !repository.existsByGame_IdAndBetNull(gameId);
     }
 }

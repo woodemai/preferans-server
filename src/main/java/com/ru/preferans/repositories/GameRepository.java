@@ -13,10 +13,6 @@ import java.util.UUID;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, UUID>, JpaSpecificationExecutor<Game> {
-    @Transactional
-    @Modifying
-    @Query("update Game g set g.state = ?1 where g.id = ?2")
-    void updateStateById(GameState state, UUID id);
 
     @Transactional
     @Modifying
@@ -25,7 +21,5 @@ public interface GameRepository extends JpaRepository<Game, UUID>, JpaSpecificat
 
     @Query("select (count(g) > 0) from Game g where g.id = ?1 and g.currentPlayerIndex = ?2")
     boolean existsByIdAndCurrentPlayerIndex(UUID id, short currentPlayerIndex);
-
-
 
 }

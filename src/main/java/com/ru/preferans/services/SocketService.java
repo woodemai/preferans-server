@@ -19,7 +19,6 @@ public class SocketService {
     private final PlayerService playerService;
     private final GameService gameService;
     private final BetService betService;
-    private final CardService cardService;
 
     private void sendGameInfo(SocketIOClient senderClient, UUID gameId) {
         GameInfo gameInfo = gameService.getInfo(gameId);
@@ -66,30 +65,32 @@ public class SocketService {
     }
 
     public void handleBet(SocketIOClient client, UUID gameId, UUID playerId, Bet bet) {
-        playerService.setBet(
-                betService.save(Bet.builder()
-                        .value(bet.getValue())
-                        .suit(bet.getSuit())
-                        .type(bet.getType())
-                        .build()),
-                playerId);
-
-        boolean allBet = gameService.allBet(gameId);
-        if (allBet) {
+        sendTurnInfo(client, gameId);
+        gameService.nextTurn(gameId);
+        playerService.setBet(betService.get(bet.getType(), bet.getSuit(), bet.getValue()), playerId);
+        boolean allBet = playerService.allBet(gameId);
+            if (allBet) {
             boolean allPassed = playerService.handleAllPassed(gameId);
-            if(allPassed) {
+            if (allPassed) {
                 gameService.setState(GameState.GAMEPLAY, gameId);
+                sendGameInfo(client,gameId);
             }
         }
-        gameService.nextTurn(gameId);
-        sendGameInfo(client, gameId);
+    }
+
+    private void sendTurnInfo(SocketIOClient senderClient, UUID gameId) {
+        for (
+                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId.toString()).getClients()
+        ) {
+            client.sendEvent("next_turn");
+        }
     }
 
     public void handleCard(SocketIOClient client, UUID gameId, UUID playerId, Card card) {
+        sendCardMoveInfo(client, gameId, playerId, card);
         playerService.removeCard(playerId, card);
         gameService.addCard(gameId, card);
         gameService.nextTurn(gameId);
-        sendCardMoveInfo(client,gameId,playerId, card);
     }
 
     private void sendCardMoveInfo(SocketIOClient senderClient, UUID gameId, UUID playerId, Card card) {

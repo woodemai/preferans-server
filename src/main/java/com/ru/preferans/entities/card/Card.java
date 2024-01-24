@@ -27,12 +27,4 @@ public class Card implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private Rank rank;
-
-    @ToString.Exclude
-    @ManyToMany
-    private Set<Game> games;
-
-    @ToString.Exclude
-    @ManyToMany
-    private Set<User> players;
 }

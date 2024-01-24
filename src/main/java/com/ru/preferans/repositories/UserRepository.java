@@ -21,6 +21,12 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("update User u set u.ready = FALSE, u.game = null where u.id = ?1")
     void updateReadyAndGameById(UUID id);
 
+    @Transactional
+    @Modifying
+    @Query("update User u set u.ready = false, u.game = null, u.score = 0, u.bet = null where u.id = ?1")
+    void reset(UUID id);
+
+
     Optional<User> getByEmail(String email);
 
     List<User> findByGame_Id(UUID id);
@@ -45,5 +51,8 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("update User u set u.bet = ?1 where u.id = ?2")
     void updateBetById(Bet bet, UUID id);
 
+    @Query("select (count(u) > 0) from User u where u.game.id = ?1 and u.bet is null")
+    boolean existsByGame_IdAndBetNull(UUID id);
 
 }
+

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,17 +22,20 @@ public class Bet implements Comparable<Bet>, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private final UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Enumerated(EnumType.STRING)
     private BetType type;
-    private short value;
+
+    private int value;
+
     @Enumerated(EnumType.STRING)
     private BetSuit suit;
 
     @ToString.Exclude
+    @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> user;
+    private List<User> user = new ArrayList<>();
 
     @Override
     public int compareTo(Bet o) {
