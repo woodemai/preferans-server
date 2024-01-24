@@ -35,19 +35,19 @@ public class GameService {
         int end = 10;
 
         for (User player : players) {
-            List<Card> userCards = cards.subList(start, end);
+            Set<Card> userCards = new HashSet<>(cards.subList(start,end));
             player.setCards(userCards);
             playerService.save(player);
             start += 10;
             end += 10;
         }
-        game.setTableCards(cards.subList(30, 32));
+        game.setPurchase(new HashSet<>(cards.subList(30, 32)));
         game.setState(GameState.TRADING);
         repository.save(game);
     }
 
     private short getNextPlayerIndex(short currentIndex) {
-        if (currentIndex < 3 - 1) {
+        if (currentIndex < 2) {
             return ++currentIndex;
         } else {
             return 0;
@@ -69,7 +69,8 @@ public class GameService {
                 .id(game.getId())
                 .state(game.getState())
                 .size(size)
-                .cards(cardService.convertListToDto(game.getTableCards()))
+                .purchase(game.getPurchase())
+                .tableDeck(game.getTableDeck())
                 .currentPlayerIndex(game.getCurrentPlayerIndex())
                 .build();
     }
@@ -98,7 +99,7 @@ public class GameService {
     }
 
     public void setState(GameState state, UUID gameId) {
-        repository.updateStateAndCurrentPlayerIndexById(state, (short) 0,gameId);
+        repository.updateStateAndCurrentPlayerIndexById(state, (short) 0, gameId);
     }
 
     public boolean allBet(UUID gameId) {
@@ -107,9 +108,7 @@ public class GameService {
 
     public void addCard(UUID gameId, Card card) {
         Game game = getById(gameId);
-        List<Card> cards = game.getTableCards();
-        cards.add(card);
-        game.setTableCards(cards);
+        game.getTableDeck().add(card);
         save(game);
     }
 

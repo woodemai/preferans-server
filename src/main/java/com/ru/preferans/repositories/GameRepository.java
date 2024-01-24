@@ -28,4 +28,12 @@ public interface GameRepository extends JpaRepository<Game, UUID>, JpaSpecificat
 
 
 
+    @Transactional
+    @Modifying
+    @Query("update Game g set g.state = ?1, g.currentPlayerIndex = ?2 where g.id = ?3")
+    void updateStateAndCurrentPlayerIndexById(GameState state, short currentPlayerIndex, UUID id);
+
+    @Query("select (count(g) > 0) from Game g where g.id = ?1 and g.currentPlayerIndex = ?2")
+    boolean existsByIdAndCurrentPlayerIndex(UUID id, short currentPlayerIndex);
+
 }

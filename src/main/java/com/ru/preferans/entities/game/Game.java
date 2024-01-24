@@ -20,7 +20,7 @@ public class Game implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private final UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Builder.Default
     private GameState state = GameState.CREATED;
@@ -28,7 +28,12 @@ public class Game implements Serializable {
     @ToString.Exclude
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Card> tableCards = new ArrayList<>();
+    private Set<Card> purchase = new HashSet<>();
+
+    @ToString.Exclude
+    @Builder.Default
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Card> tableDeck = new HashSet<>();
 
     @ToString.Exclude
     @Builder.Default

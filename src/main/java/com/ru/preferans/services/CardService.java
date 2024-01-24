@@ -45,20 +45,6 @@ public class CardService {
         return cardRepository.findAll();
     }
 
-    public List<CardDto> convertListToDto(List<Card> cards) {
-        List<CardDto> cardDTOs = new ArrayList<>();
-        for (Card card : cards) {
-            cardDTOs.add(
-                    CardDto.builder()
-                            .id(card.getId())
-                            .suit(card.getSuit())
-                            .rank(card.getRank())
-                            .build()
-            );
-        }
-        return cardDTOs;
-    }
-
     public Card getById(UUID cardId) {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> getNotFoundExc(cardId));
@@ -67,4 +53,5 @@ public class CardService {
     private EntityNotFoundException getNotFoundExc(UUID id) {
         return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
     }
+
 }

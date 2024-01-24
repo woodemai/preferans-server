@@ -14,8 +14,7 @@ import java.util.UUID;
 
 @Repository
 public interface BetRepository extends JpaRepository<Bet, UUID>, JpaSpecificationExecutor<Bet> {
-    @Query("select b from Bet b where b.type = ?1 and b.value = ?2 and b.suit = ?3")
-    Optional<Bet> findByTypeAndValueAndSuit(BetType type, @Nullable short value, @Nullable BetSuit suit);
-
+    @Query("select b from Bet b where b.type = ?1 and b.suit = ?2 and b.value = ?3")
+    Optional<Bet> findByTypeAndSuitAndValue(@Nullable BetType type, @Nullable BetSuit suit, @Nullable int value);
 
 }
