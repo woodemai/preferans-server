@@ -19,7 +19,7 @@ public class Token implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private final UUID id = UUID.randomUUID();
 
     @OneToOne
     private User user;
