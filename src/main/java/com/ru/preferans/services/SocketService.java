@@ -73,8 +73,17 @@ public class SocketService {
             boolean allPassed = playerService.handleAllPassed(gameId);
             if (allPassed) {
                 gameService.setState(GameState.GAMEPLAY, gameId);
+                sendMovePurchaseToTable(client, gameId);
                 sendGameInfo(client,gameId);
             }
+        }
+    }
+
+    private void sendMovePurchaseToTable(SocketIOClient senderClient, UUID gameId) {
+        for (
+                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId.toString()).getClients()
+        ) {
+            client.sendEvent("move_purchase");
         }
     }
 
@@ -88,9 +97,25 @@ public class SocketService {
 
     public void handleCard(SocketIOClient client, UUID gameId, UUID playerId, Card card) {
         sendCardMoveInfo(client, gameId, playerId, card);
+        gameService.handleBribeWinner(gameId,playerId, card);
         playerService.removeCard(playerId, card);
-        gameService.addCard(gameId, card);
-        gameService.nextTurn(gameId);
+        boolean allMoved = playerService.allMoved(gameId);
+        if (allMoved) {
+            Game game = gameService.getById(gameId);
+            sendBribeEnd(client, gameId, game.getBribeWinnerId());
+            gameService.handleBribeEnd(game);
+        }else {
+            gameService.addCard(gameId, card);
+            gameService.nextTurn(gameId);
+        }
+    }
+
+    private void sendBribeEnd(SocketIOClient senderClient, UUID gameId, UUID bribeWinnerId) {
+        for (
+                SocketIOClient client : senderClient.getNamespace().getRoomOperations(gameId.toString()).getClients()
+        ) {
+            client.sendEvent("bribe_end", bribeWinnerId);
+        }
     }
 
     private void sendCardMoveInfo(SocketIOClient senderClient, UUID gameId, UUID playerId, Card card) {

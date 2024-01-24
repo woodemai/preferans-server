@@ -21,7 +21,6 @@ public class PlayerService {
     private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
 
     private final UserRepository repository;
-    private final CardService cardService;
 
 
     public List<UserDto> getDTOs(UUID gameId) {
@@ -121,5 +120,22 @@ public class PlayerService {
 
     public boolean allBet(UUID gameId) {
         return !repository.existsByGame_IdAndBetNull(gameId);
+    }
+
+    public boolean allMoved(UUID gameId) {
+        List<User> players = getPlayers(gameId);
+        int cardQuantity = players.getFirst().getCards().size();
+        for (User player: players) {
+            if (player.getCards().size() != cardQuantity) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void handleScore(UUID playerId) {
+        User player = getById(playerId);
+        player.setScore(player.getScore() + 1);
+        save(player);
     }
 }

@@ -40,6 +40,12 @@ public class Game implements Serializable {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> players = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Card bribeWinnerCard;
+
+    private UUID bribeWinnerId;
+
     @Builder.Default
     private short currentPlayerIndex = 0;
 

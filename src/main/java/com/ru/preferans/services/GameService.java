@@ -35,7 +35,7 @@ public class GameService {
         int end = 10;
 
         for (User player : players) {
-            Set<Card> userCards = new HashSet<>(cards.subList(start,end));
+            Set<Card> userCards = new HashSet<>(cards.subList(start, end));
             player.setCards(userCards);
             playerService.save(player);
             start += 10;
@@ -98,12 +98,22 @@ public class GameService {
         save(game);
     }
 
-    public void setState(GameState state, UUID gameId) {
-        repository.updateStateAndCurrentPlayerIndexById(state, (short) 0, gameId);
+    public void movePurchaseToTable(Game game) {
+        if (!game.getPurchase().isEmpty()) {
+            Card card = game.getPurchase().stream().toList().getFirst();
+            game.getPurchase().remove(card);
+            Set<Card> tableDeck = game.getTableDeck();
+            tableDeck.add(card);
+            game.setTableDeck(tableDeck);
+        }
     }
 
-    public boolean allBet(UUID gameId) {
-        return repository.existsByIdAndCurrentPlayerIndex(gameId, (short) 2);
+    public void setState(GameState state, UUID gameId) {
+        Game game = getById(gameId);
+        movePurchaseToTable(game);
+        game.setState(state);
+        game.setCurrentPlayerIndex((short) 0);
+        save(game);
     }
 
     public void addCard(UUID gameId, Card card) {
@@ -121,5 +131,27 @@ public class GameService {
                         .rank(card.getRank())
                         .build())
                 .build();
+    }
+
+    public void handleBribeEnd(Game game) {
+        playerService.handleScore(game.getBribeWinnerId());
+        game.getTableDeck().clear();
+        game.setBribeWinnerCard(null);
+        game.setBribeWinnerId(null);
+        save(game);
+    }
+
+    public void handleBribeWinner(UUID gameId, UUID playerId, Card card) {
+        Game game = getById(gameId);
+        if (game.getBribeWinnerId() == null) {
+            game.setBribeWinnerCard(card);
+            game.setBribeWinnerId(playerId);
+        } else if (game.getBribeWinnerCard().getSuit() == card.getSuit()) {
+            if (game.getBribeWinnerCard().getRank().getValue() < card.getRank().getValue()) {
+                game.setBribeWinnerCard(card);
+                game.setBribeWinnerId(playerId);
+            }
+        }
+        save(game);
     }
 }
