@@ -15,7 +15,7 @@ public interface GameRepository extends JpaRepository<Game, UUID>, JpaSpecificat
     @Transactional
     @Modifying
     @Query("delete from Game g where g.players is empty and g.id = ?1")
-    int deleteByPlayersEmptyAndId(UUID id);
+    void deleteByPlayersEmptyAndId(UUID id);
 
 
 }
