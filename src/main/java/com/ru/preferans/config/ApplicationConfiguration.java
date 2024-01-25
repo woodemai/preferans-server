@@ -22,7 +22,7 @@ public class ApplicationConfiguration {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.getByEmail(username)
-                .orElseThrow(() -> new EntityNotFoundException("User with email " + username + "not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with email " + username + " not found"));
     }
 
     @Bean

@@ -37,6 +37,7 @@ public class GameService {
         for (User player : players) {
             Set<Card> userCards = new HashSet<>(cards.subList(start, end));
             player.setCards(userCards);
+            player.setScore(0);
             playerService.save(player);
             start += 10;
             end += 10;
@@ -72,6 +73,7 @@ public class GameService {
                 .purchase(game.getPurchase())
                 .tableDeck(game.getTableDeck())
                 .currentPlayerIndex(game.getCurrentPlayerIndex())
+                .bribeWinnerCard(game.getBribeWinnerCard())
                 .build();
     }
 
@@ -104,6 +106,7 @@ public class GameService {
             game.getPurchase().remove(card);
             Set<Card> tableDeck = game.getTableDeck();
             tableDeck.add(card);
+            game.setBribeWinnerCard(card);
             game.setTableDeck(tableDeck);
         }
     }
@@ -138,12 +141,13 @@ public class GameService {
         game.getTableDeck().clear();
         game.setBribeWinnerCard(null);
         game.setBribeWinnerId(null);
+        movePurchaseToTable(game);
         save(game);
     }
 
     public void handleBribeWinner(UUID gameId, UUID playerId, Card card) {
         Game game = getById(gameId);
-        if (game.getBribeWinnerId() == null) {
+        if (game.getBribeWinnerCard() == null) {
             game.setBribeWinnerCard(card);
             game.setBribeWinnerId(playerId);
         } else if (game.getBribeWinnerCard().getSuit() == card.getSuit()) {
@@ -153,5 +157,9 @@ public class GameService {
             }
         }
         save(game);
+    }
+
+    public boolean handleRoundEnd(List<User> players) {
+        return players.getFirst().getCards().isEmpty();
     }
 }

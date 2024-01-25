@@ -34,8 +34,7 @@ public class User implements UserDetails, Serializable {
 
     private String name;
 
-    @Builder.Default
-    private int score = 0;
+    private int score;
 
     @Builder.Default
     private boolean ready = false;

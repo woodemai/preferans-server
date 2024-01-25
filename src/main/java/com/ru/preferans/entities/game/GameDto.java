@@ -1,7 +1,6 @@
 package com.ru.preferans.entities.game;
 
 import com.ru.preferans.entities.card.Card;
-import com.ru.preferans.entities.card.CardDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,4 +21,5 @@ public class GameDto {
     private Set<Card> purchase;
     private Set<Card> tableDeck;
     private short currentPlayerIndex;
+    private Card bribeWinnerCard;
 }

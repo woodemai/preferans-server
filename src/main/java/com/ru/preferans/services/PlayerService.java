@@ -39,7 +39,6 @@ public class PlayerService {
                 .name(user.getName())
                 .score(user.getScore())
                 .ready(user.isReady())
-
                 .build();
         if (user.getCards() != null) {
             dto.setCards(user.getCards());
@@ -122,8 +121,7 @@ public class PlayerService {
         return !repository.existsByGame_IdAndBetNull(gameId);
     }
 
-    public boolean allMoved(UUID gameId) {
-        List<User> players = getPlayers(gameId);
+    public boolean allMoved(List<User> players) {
         int cardQuantity = players.getFirst().getCards().size();
         for (User player: players) {
             if (player.getCards().size() != cardQuantity) {
@@ -134,8 +132,11 @@ public class PlayerService {
     }
 
     public void handleScore(UUID playerId) {
-        User player = getById(playerId);
-        player.setScore(player.getScore() + 1);
-        save(player);
+
+        if (playerId != null) {
+            User player = getById(playerId);
+            player.setScore(player.getScore() + 1);
+            save(player);
+        }
     }
 }
