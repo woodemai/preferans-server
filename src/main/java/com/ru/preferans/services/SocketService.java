@@ -38,6 +38,7 @@ public class SocketService {
 
     public void disconnectPlayer(SocketIOClient senderClient, UUID gameId, UUID playerId) {
         playerService.disconnect(playerId);
+        gameService.deleteIfNoPlayers(gameId);
         sendGameEvent(senderClient, gameId, EventType.INFO, gameService.getInfo(gameId));
     }
 

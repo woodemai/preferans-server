@@ -147,19 +147,19 @@ public class GameService {
 
     public void handleBribeWinner(UUID gameId, UUID playerId, Card card) {
         Game game = getById(gameId);
-        if (game.getBribeWinnerCard() == null) {
+        Card bribeWinnerCard = game.getBribeWinnerCard();
+        if (bribeWinnerCard == null || bribeWinnerCard.getSuit() == card.getSuit() && (bribeWinnerCard.getRank().getValue() < card.getRank().getValue())) {
             game.setBribeWinnerCard(card);
             game.setBribeWinnerId(playerId);
-        } else if (game.getBribeWinnerCard().getSuit() == card.getSuit()) {
-            if (game.getBribeWinnerCard().getRank().getValue() < card.getRank().getValue()) {
-                game.setBribeWinnerCard(card);
-                game.setBribeWinnerId(playerId);
-            }
         }
         save(game);
     }
 
     public boolean handleRoundEnd(List<User> players) {
         return players.getFirst().getCards().isEmpty();
+    }
+
+    public void deleteIfNoPlayers(UUID gameId) {
+        repository.deleteByPlayersEmptyAndId(gameId);
     }
 }
