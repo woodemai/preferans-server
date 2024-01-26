@@ -94,8 +94,7 @@ public class GameService {
                 .build();
     }
 
-    public void nextTurn(UUID gameId) {
-        Game game = getById(gameId);
+    public void nextTurn(Game game) {
         game.setCurrentPlayerIndex(getNextPlayerIndex(game.getCurrentPlayerIndex()));
         save(game);
     }
@@ -111,8 +110,7 @@ public class GameService {
         }
     }
 
-    public void setState(GameState state, UUID gameId) {
-        Game game = getById(gameId);
+    public void setState(GameState state, Game game) {
         movePurchaseToTable(game);
         game.setState(state);
         game.setCurrentPlayerIndex((short) 0);
@@ -145,21 +143,29 @@ public class GameService {
         save(game);
     }
 
-    public void handleBribeWinner(UUID gameId, UUID playerId, Card card) {
-        Game game = getById(gameId);
-        if (game.getBribeWinnerCard() == null) {
+    public void handleBribeWinner(Game game, UUID playerId, Card card) {
+        Card bribeWinnerCard = game.getBribeWinnerCard();
+        if (bribeWinnerCard == null || bribeWinnerCard.getSuit() == card.getSuit() && (bribeWinnerCard.getRank().getValue() < card.getRank().getValue())) {
             game.setBribeWinnerCard(card);
             game.setBribeWinnerId(playerId);
-        } else if (game.getBribeWinnerCard().getSuit() == card.getSuit()) {
-            if (game.getBribeWinnerCard().getRank().getValue() < card.getRank().getValue()) {
-                game.setBribeWinnerCard(card);
-                game.setBribeWinnerId(playerId);
-            }
         }
         save(game);
     }
 
     public boolean handleRoundEnd(List<User> players) {
         return players.getFirst().getCards().isEmpty();
+    }
+
+    public void deleteIfNoPlayers(UUID gameId) {
+        repository.deleteByPlayersEmptyAndId(gameId);
+    }
+
+    public void movePurchaseToPlayer(Game game, UUID playerId) {
+        User player = playerService.getById(playerId);
+        Set<Card> cards = player.getCards();
+        cards.addAll(game.getPurchase());
+        game.setPurchase(new HashSet<>());
+        save(game);
+        playerService.save(player);
     }
 }

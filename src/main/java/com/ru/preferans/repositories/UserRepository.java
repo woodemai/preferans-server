@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
     @Transactional
     @Modifying
-    @Query("update User u set u.ready = false, u.game = null, u.score = 0, u.bet = null where u.id = ?1")
+    @Query("update User u set u.ready = false, u.game = null, u.bet = null where u.id = ?1")
     void reset(UUID id);
 
 

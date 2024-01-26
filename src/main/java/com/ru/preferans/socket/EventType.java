@@ -11,7 +11,8 @@ public enum EventType {
     MOVE_PURCHASE("move_purchase"),
     HANDLE_STATE("handle_state"),
     MOVE("move"),
-    BRIBE_END("bribe_end");
+    BRIBE_END("bribe_end"),
+    HANDLE_WIN("handle_win");
     private final String type;
 
     EventType(String type) {

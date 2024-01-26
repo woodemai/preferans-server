@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -51,7 +52,7 @@ public class PlayerService {
 
         long playersQuantity = repository.countByGame_Id(game.getId());
 
-        if (playersQuantity > 3) return;
+        if (playersQuantity >= 3) return;
 
         repository.updateGameById(game, playerId);
 
@@ -101,14 +102,14 @@ public class PlayerService {
         repository.updateBetById(bet, playerId);
     }
 
-    public boolean handleAllPassed(UUID gameId) {
-        List<User> players = getPlayers(gameId);
+    public int handleAllPassed(List<User> players) {
+        int passed = 0;
         for (User player : players) {
-            if (player.getBet() != null && player.getBet().getType() != BetType.PASS) {
-                return false;
+            if (player.getBet() != null && player.getBet().getType() == BetType.PASS) {
+                passed++;
             }
         }
-        return true;
+        return passed;
     }
 
     public void removeCard(UUID playerId, Card card) {
@@ -138,5 +139,14 @@ public class PlayerService {
             player.setScore(player.getScore() + 1);
             save(player);
         }
+    }
+
+    public void handleDropCard(UserDto userDto) {
+        User player = getById(userDto.getId());
+        Set<Card> cards = player.getCards();
+        for (Card card : userDto.getCards()) {
+            cards.removeIf(card1 -> card1.getSuit() == card.getSuit() && card1.getRank() == card.getRank());
+        }
+        save(player);
     }
 }
