@@ -74,6 +74,8 @@ public class AuthenticationService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
+                .ready(user.isReady())
+                .score(user.getScore())
                 .build();
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
