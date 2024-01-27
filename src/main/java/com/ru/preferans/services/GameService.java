@@ -1,50 +1,53 @@
 package com.ru.preferans.services;
 
+import com.ru.preferans.entities.EntityType;
 import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.card.CardDto;
 import com.ru.preferans.entities.game.*;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.repositories.GameRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
 
-    private static final String NOT_FOUND_MESSAGE = "Game with id '%s' not found";
 
     private final GameRepository repository;
-    private final CardService cardService;
     private final PlayerService playerService;
+    private final ErrorService errorService;
 
     public Game create() {
         return save(Game.builder().build());
     }
 
-    public void start(UUID id) {
-        List<User> players = playerService.getPlayers(id);
-        List<Card> cards = cardService.getShuffleDeck();
-        Game game = getById(id);
-
+    public void
+    start(Game game, List<Card> cards) {
         int start = 0;
         int end = 10;
-
-        for (User player : players) {
+        for (User player : game.getPlayers()) {
             Set<Card> userCards = new HashSet<>(cards.subList(start, end));
             player.setCards(userCards);
             player.setScore(0);
-            playerService.save(player);
             start += 10;
             end += 10;
         }
         game.setPurchase(new HashSet<>(cards.subList(30, 32)));
         game.setState(GameState.TRADING);
-        repository.save(game);
+    }
+    public Page<Game> getGames(int pageNumber, int pageSize, Sort sort) {
+
+        return repository.findAll(PageRequest.of(pageNumber, pageSize, sort));
     }
 
     private short getNextPlayerIndex(short currentIndex) {
@@ -55,34 +58,25 @@ public class GameService {
         }
     }
 
-    private Game save(Game game) {
+    public Game save(Game game) {
         return repository.save(game);
     }
 
     public Game getById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> getNotFoundExc(id));
+                .orElseThrow(() -> errorService.getEntityNotFoundException(EntityType.GAME, id));
     }
 
     public GameDto convertToDto(Game game) {
-        short size = playerService.getGamePlayersQuantity(game.getId());
         return GameDto.builder()
                 .id(game.getId())
                 .state(game.getState())
-                .size(size)
+                .size((short) game.getPlayers().size())
                 .purchase(game.getPurchase())
                 .tableDeck(game.getTableDeck())
                 .currentPlayerIndex(game.getCurrentPlayerIndex())
                 .bribeWinnerCard(game.getBribeWinnerCard())
                 .build();
-    }
-
-    private EntityNotFoundException getNotFoundExc(UUID id) {
-        return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
-    }
-
-    public List<Game> getAll() {
-        return repository.findAll();
     }
 
     public GameInfo getInfo(UUID id) {
@@ -110,11 +104,10 @@ public class GameService {
         }
     }
 
-    public void setState(GameState state, Game game) {
+    public void setState(GameState state, short currentPlayerIndex, Game game) {
         movePurchaseToTable(game);
         game.setState(state);
-        game.setCurrentPlayerIndex((short) 0);
-        save(game);
+        game.setCurrentPlayerIndex(currentPlayerIndex);
     }
 
     public void addCard(UUID gameId, Card card) {
@@ -149,11 +142,10 @@ public class GameService {
             game.setBribeWinnerCard(card);
             game.setBribeWinnerId(playerId);
         }
-        save(game);
     }
 
-    public boolean handleRoundEnd(List<User> players) {
-        return players.getFirst().getCards().isEmpty();
+    public boolean handleRoundEnd(Set<User> players) {
+        return players.stream().toList().getFirst().getCards().isEmpty();
     }
 
     public void deleteIfNoPlayers(UUID gameId) {
@@ -161,11 +153,13 @@ public class GameService {
     }
 
     public void movePurchaseToPlayer(Game game, UUID playerId) {
-        User player = playerService.getById(playerId);
-        Set<Card> cards = player.getCards();
-        cards.addAll(game.getPurchase());
-        game.setPurchase(new HashSet<>());
-        save(game);
-        playerService.save(player);
+        for(User player : game.getPlayers()) {
+            if(player.getId().equals(playerId)) {
+                Set<Card> cards = player.getCards();
+                cards.addAll(game.getPurchase());
+                game.setPurchase(new HashSet<>());
+
+            }
+        }
     }
 }

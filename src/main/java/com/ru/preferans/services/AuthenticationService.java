@@ -10,7 +10,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -60,13 +59,9 @@ public class AuthenticationService {
 
 
     private void setTokenToCookie(HttpServletResponse response, String token) {
-        try {
-            Cookie cookie = new Cookie("refreshToken", token);
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-        } catch (Exception e) {
-            throw new AuthenticationServiceException("Setting cookie exception");
-        }
+        Cookie cookie = new Cookie("refreshToken", token);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 
     private AuthenticationResponse buildResponse(String accessToken, User user) {
@@ -83,20 +78,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void login(AuthenticationRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (RuntimeException e) {
-            throw new AuthenticationServiceException("Password is wrong");
-        }
-    }
-
-    private void login(RegisterRequest request) {
+    private <T extends AuthenticationRequest> void login(T request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),

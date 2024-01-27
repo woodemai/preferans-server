@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, UUID>, JpaSpecificationExecutor<Game> {
+
     @Transactional
     @Modifying
     @Query("delete from Game g where g.players is empty and g.id = ?1")

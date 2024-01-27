@@ -4,4 +4,5 @@ public enum GameState {
     CREATED,
     TRADING,
     GAMEPLAY,
+    DROPPING
 }

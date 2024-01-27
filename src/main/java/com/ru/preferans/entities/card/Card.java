@@ -1,12 +1,9 @@
 package com.ru.preferans.entities.card;
 
-import com.ru.preferans.entities.game.Game;
-import com.ru.preferans.entities.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter

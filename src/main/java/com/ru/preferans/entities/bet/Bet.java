@@ -1,17 +1,15 @@
 package com.ru.preferans.entities.bet;
 
-import com.ru.preferans.entities.user.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 
-@Entity
+@Embeddable
 @Builder
 @Getter
 @Setter
@@ -20,10 +18,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Bet implements Comparable<Bet>, Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
     @Enumerated(EnumType.STRING)
     private BetType type;
 
@@ -31,11 +25,6 @@ public class Bet implements Comparable<Bet>, Serializable {
 
     @Enumerated(EnumType.STRING)
     private BetSuit suit;
-
-    @ToString.Exclude
-    @Builder.Default
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> user = new ArrayList<>();
 
     @Override
     public int compareTo(Bet o) {
@@ -64,11 +53,11 @@ public class Bet implements Comparable<Bet>, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Bet bet = (Bet) o;
-        return value == bet.value && Objects.equals(id, bet.id) && type == bet.type && suit == bet.suit && Objects.equals(user, bet.user);
+        return value == bet.value && type == bet.type && suit == bet.suit;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, value, suit, user);
+        return Objects.hash( type, value, suit);
     }
 }

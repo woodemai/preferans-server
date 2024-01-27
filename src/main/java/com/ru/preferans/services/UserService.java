@@ -1,12 +1,11 @@
 package com.ru.preferans.services;
 
 
+import com.ru.preferans.entities.EntityType;
 import com.ru.preferans.entities.auth.RegisterRequest;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserRole;
 import com.ru.preferans.repositories.UserRepository;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,15 +14,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
-    private static final String EXISTS_MESSAGE = "User with email '%s' already exists";
-
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final ErrorService errorService;
 
     public User getByEmail(String email) {
         return repository.getByEmail(email)
-                .orElseThrow(() -> getNotFoundExc(email));
+                .orElseThrow(() -> errorService.getEntityNotFoundException(EntityType.USER,email));
     }
 
     public User save(RegisterRequest request) {
@@ -35,16 +32,8 @@ public class UserService {
                     .role(UserRole.USER)
                     .build());
         } else {
-            throw getExistsExc(request.getEmail());
+            throw errorService.getEntityExistException(EntityType.USER, request.getEmail());
         }
-    }
-
-    private EntityNotFoundException getNotFoundExc(String email) {
-        return new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, email));
-    }
-
-    private EntityExistsException getExistsExc(String email) {
-        return new EntityExistsException(String.format(EXISTS_MESSAGE, email));
     }
 
 }
