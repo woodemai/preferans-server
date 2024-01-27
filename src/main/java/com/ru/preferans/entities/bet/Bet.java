@@ -1,14 +1,12 @@
 package com.ru.preferans.entities.bet;
 
-import com.ru.preferans.entities.user.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 
 @Embeddable

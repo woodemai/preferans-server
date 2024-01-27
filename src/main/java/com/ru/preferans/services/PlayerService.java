@@ -29,10 +29,6 @@ public class PlayerService {
         return players.stream().map(this::convertToDTO).toList();
     }
 
-    public List<User> getPlayers(UUID gameId) {
-        return repository.findByGame_Id(gameId);
-    }
-
     public UserDto convertToDTO(User user) {
         UserDto dto = UserDto.builder()
                 .id(user.getId())
@@ -92,10 +88,6 @@ public class PlayerService {
         repository.save(player);
     }
 
-    public short getGamePlayersQuantity(UUID id) {
-        return repository.countByGame_Id(id);
-    }
-
     public boolean setBet(Bet bet, Set<User> players, UUID playerId) {
         boolean allBet = true;
         for(User player : players) {
@@ -124,10 +116,6 @@ public class PlayerService {
                 player.getCards().removeIf(card1 -> card1.getId().equals(card.getId()));
             }
         }
-    }
-
-    public boolean allBet(UUID gameId) {
-        return !repository.existsByGame_IdAndBetNull(gameId);
     }
 
     public boolean allMoved(Set<User> players) {
@@ -167,7 +155,4 @@ public class PlayerService {
         return players.stream().map(this::convertToDTO).toList();
     }
 
-    public void setBetById(Bet bet, UUID id) {
-        repository.updateBetById(bet, id);
-    }
 }

@@ -45,7 +45,7 @@ public class SocketExceptionHandler implements ExceptionListener {
     }
 
     @Override
-    public boolean exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
+    public boolean exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
         return false;
     }
 }
