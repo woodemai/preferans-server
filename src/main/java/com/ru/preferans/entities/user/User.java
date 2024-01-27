@@ -5,6 +5,8 @@ import com.ru.preferans.entities.card.Card;
 import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.token.Token;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,10 +30,15 @@ public class User implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+
+    @Email(message = "Email is not valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @NotEmpty(message = "Email cannot be empty")
     private String email;
 
+    @NotEmpty
     private String password;
 
+    @NotEmpty
     private String name;
 
     private int score;
@@ -51,7 +58,7 @@ public class User implements UserDetails, Serializable {
     private Set<Card> cards = new HashSet<>();
 
     @Builder.Default
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Embedded
     private Bet bet = null;
 
     @Enumerated(EnumType.STRING)

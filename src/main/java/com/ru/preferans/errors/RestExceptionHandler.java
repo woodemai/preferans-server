@@ -1,5 +1,6 @@
 package com.ru.preferans.errors;
 
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.core.Ordered;
@@ -36,6 +37,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AuthenticationServiceException.class)
     public ResponseEntity<Object> handleUnknown(AuthenticationServiceException ex) {
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
+        return buildResponseEntity(apiError);
+    }
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<Object> handleUnknown(MalformedJwtException ex) {
+        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
         return buildResponseEntity(apiError);
     }
 

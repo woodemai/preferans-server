@@ -37,7 +37,7 @@ public class Game implements Serializable {
 
     @ToString.Exclude
     @Builder.Default
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> players = new LinkedHashSet<>();
 
     @ToString.Exclude

@@ -1,5 +1,6 @@
 package com.ru.preferans.services;
 
+import com.ru.preferans.entities.EntityType;
 import com.ru.preferans.entities.bet.Bet;
 import com.ru.preferans.entities.bet.BetType;
 import com.ru.preferans.entities.card.Card;
@@ -7,7 +8,6 @@ import com.ru.preferans.entities.game.Game;
 import com.ru.preferans.entities.user.User;
 import com.ru.preferans.entities.user.UserDto;
 import com.ru.preferans.repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayerService {
 
-    private static final String NOT_FOUND_MESSAGE = "User with ID '%s' not found";
 
     private final UserRepository repository;
+    private final ErrorService errorService;
 
 
     public List<UserDto> getDTOs(UUID gameId) {
@@ -48,14 +48,12 @@ public class PlayerService {
     }
 
 
-    public void connect(UUID playerId, Game game) {
-
-        long playersQuantity = repository.countByGame_Id(game.getId());
-
-        if (playersQuantity >= 3) return;
-
-        repository.updateGameById(game, playerId);
-
+    public void connect(User player, Game game) {
+        if (game.getPlayers().size() >= 3) return;
+        Set<User> players = game.getPlayers();
+        players.add(player);
+        game.setPlayers(players);
+        player.setGame(game);
     }
 
 
@@ -86,7 +84,7 @@ public class PlayerService {
 
     public User getById(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, id)));
+                .orElseThrow(() -> errorService.getEntityNotFoundException(EntityType.USER, id));
 
     }
 
@@ -98,11 +96,19 @@ public class PlayerService {
         return repository.countByGame_Id(id);
     }
 
-    public void setBet(Bet bet, UUID playerId) {
-        repository.updateBetById(bet, playerId);
+    public boolean setBet(Bet bet, Set<User> players, UUID playerId) {
+        boolean allBet = true;
+        for(User player : players) {
+            if (player.getId().equals(playerId)) {
+                player.setBet(bet);
+            } else if (player.getBet() == null) {
+                allBet = false;
+            }
+        }
+        return allBet;
     }
 
-    public int handleAllPassed(List<User> players) {
+    public int handleAllPassed(Set<User> players) {
         int passed = 0;
         for (User player : players) {
             if (player.getBet() != null && player.getBet().getType() == BetType.PASS) {
@@ -112,18 +118,20 @@ public class PlayerService {
         return passed;
     }
 
-    public void removeCard(UUID playerId, Card card) {
-        User player = getById(playerId);
-        player.getCards().removeIf(card1 -> card1.getId().equals(card.getId()));
-        save(player);
+    public void removeCard(Set<User> players, UUID playerId, Card card) {
+        for(User player : players) {
+            if(player.getId().equals(playerId)) {
+                player.getCards().removeIf(card1 -> card1.getId().equals(card.getId()));
+            }
+        }
     }
 
     public boolean allBet(UUID gameId) {
         return !repository.existsByGame_IdAndBetNull(gameId);
     }
 
-    public boolean allMoved(List<User> players) {
-        int cardQuantity = players.getFirst().getCards().size();
+    public boolean allMoved(Set<User> players) {
+        int cardQuantity = players.stream().toList().getFirst().getCards().size();
         for (User player: players) {
             if (player.getCards().size() != cardQuantity) {
                 return false;
@@ -141,12 +149,25 @@ public class PlayerService {
         }
     }
 
-    public void handleDropCard(UserDto userDto) {
-        User player = getById(userDto.getId());
+    public int handleDropCard(UUID playerId, Card card) {
+        User player = getById(playerId);
         Set<Card> cards = player.getCards();
-        for (Card card : userDto.getCards()) {
-            cards.removeIf(card1 -> card1.getSuit() == card.getSuit() && card1.getRank() == card.getRank());
-        }
+        cards.removeIf(card1 -> card1.getRank() == card.getRank() && card1.getSuit() == card.getSuit());
         save(player);
+        return cards.size();
+    }
+
+    public void saveAll(Set<User> players) {
+        for (User player : players) {
+            repository.save(player);
+        }
+    }
+
+    public List<UserDto> convertListToDto(Set<User> players) {
+        return players.stream().map(this::convertToDTO).toList();
+    }
+
+    public void setBetById(Bet bet, UUID id) {
+        repository.updateBetById(bet, id);
     }
 }

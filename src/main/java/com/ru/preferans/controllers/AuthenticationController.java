@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -18,7 +21,9 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> registration(@RequestBody RegisterRequest request, HttpServletResponse httpServletResponse) {
-        return ResponseEntity.ok(service.registration(request, httpServletResponse));
+        AuthenticationResponse response = service.registration(request, httpServletResponse);
+        URI location = UriComponentsBuilder.fromPath("/api/v1/users/{id}").buildAndExpand(response.getUser().getId()).toUri();
+        return ResponseEntity.created(location).body(response);
     }
 
     @PostMapping("/login")
@@ -28,7 +33,7 @@ public class AuthenticationController {
 
     @GetMapping("/refresh")
     public ResponseEntity<AuthenticationResponse> refresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse httpServletResponse) {
-        return ResponseEntity.ok(service.refresh(refreshToken, httpServletResponse));
+        return ResponseEntity.accepted().body(service.refresh(refreshToken, httpServletResponse));
     }
 
     @DeleteMapping("/logout")
