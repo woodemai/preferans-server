@@ -121,6 +121,7 @@ public class SocketService {
             gameService.addCard(gameId, card);
             gameService.nextTurn(game);
         }
+        gameService.save(game);
     }
 
     public void handleDrop(SocketIOClient client, UUID gameId, UUID playerId, Card card) {
