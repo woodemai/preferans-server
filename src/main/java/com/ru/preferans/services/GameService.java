@@ -90,7 +90,6 @@ public class GameService {
 
     public void nextTurn(Game game) {
         game.setCurrentPlayerIndex(getNextPlayerIndex(game.getCurrentPlayerIndex()));
-        save(game);
     }
 
     public void movePurchaseToTable(Game game) {
@@ -113,7 +112,6 @@ public class GameService {
     public void addCard(UUID gameId, Card card) {
         Game game = getById(gameId);
         game.getTableDeck().add(card);
-        save(game);
     }
 
     public MoveInfo getMoveInfo(UUID playerId, Card card) {
@@ -133,7 +131,6 @@ public class GameService {
         game.setBribeWinnerCard(null);
         game.setBribeWinnerId(null);
         movePurchaseToTable(game);
-        save(game);
     }
 
     public void handleBribeWinner(Game game, UUID playerId, Card card) {
