@@ -20,6 +20,11 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @Query("update User u set u.ready = false, u.game = null, u.bet = null where u.id = ?1")
     void reset(UUID id);
 
+    @Transactional
+    @Modifying
+    @Query("update User u set u.name = ?1 where u.id = ?2")
+    void updateName(String name, UUID id);
+
 
     Optional<User> getByEmail(String email);
 
