@@ -5,7 +5,7 @@ spring:
     platform: postgres
     driverClassName: org.postgresql.Driver
     # noinspection SpellCheckingInspection
-    url: jdbc:postgresql://db.nehdmglhmjoxjhyxljms.supabase.co:5432/postgres?user=postgres&password=wooDe.73warehouse
+    url: jdbc:postgresql://aws-0-eu-central-1.pooler.supabase.com:5432/postgres?user=postgres.nehdmglhmjoxjhyxljms&password=wooDe.73warehouse
     username: postgres
     password: wooDe.73warehouse
 socket-server:
