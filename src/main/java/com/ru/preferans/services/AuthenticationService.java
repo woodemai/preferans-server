@@ -61,6 +61,7 @@ public class AuthenticationService {
     private void setTokenToCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);
+        cookie.setAttribute("SameSite", "Strict");
         response.addCookie(cookie);
     }
 
