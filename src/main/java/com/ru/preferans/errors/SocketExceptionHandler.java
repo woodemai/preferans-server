@@ -1,9 +1,7 @@
 package com.ru.preferans.errors;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.listener.ExceptionListener;
 import com.corundumstudio.socketio.listener.ExceptionListenerAdapter;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
