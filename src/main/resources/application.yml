@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: development
+    active: production
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
@@ -8,8 +8,11 @@ spring:
     url: jdbc:postgresql://aws-0-eu-central-1.pooler.supabase.com:5432/postgres?user=postgres.nehdmglhmjoxjhyxljms&password=wooDe.73warehouse
     username: postgres
     password: wooDe.73warehouse
+server:
+  address: 5.35.11.110
+  port: 443
 socket-server:
-  host: localhost
+  host: 5.35.11.110
   port: 8086
 ---
 spring:
