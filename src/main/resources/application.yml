@@ -10,7 +10,14 @@ spring:
     password: wooDe.73warehouse
 server:
   address: 5.35.11.110
-  port: 443
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: password
+    keyStoreType: PKCS12
+    keyAlias: tomcat
+security:
+  require-ssl: true
 socket-server:
   host: 5.35.11.110
   port: 80
