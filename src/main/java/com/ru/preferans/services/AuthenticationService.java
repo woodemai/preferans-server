@@ -62,7 +62,7 @@ public class AuthenticationService {
         Cookie cookie = new Cookie("refreshToken", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setAttribute("SameSite", "None");
+        cookie.setAttribute("SameSite", "Strict");
         response.addCookie(cookie);
     }
 
