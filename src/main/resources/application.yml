@@ -20,7 +20,7 @@ security:
   require-ssl: true
 socket-server:
   host: 5.35.11.110
-  port: 8086
+  port: 80
 ---
 spring:
   config:
